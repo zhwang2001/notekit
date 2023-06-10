@@ -2,6 +2,7 @@ import {Button, Divider, IconButton, InputAdornment, TextField, Typography} from
 import {useEffect, useState} from "react";
 import {inputValidation} from "./utils/validation";
 import {BsArrowRight} from "react-icons/bs";
+import {Configuration, OpenAIApi} from "openai";
 
 //TODO
 //__minimum string length is 300
@@ -26,7 +27,7 @@ import {BsArrowRight} from "react-icons/bs";
  */
 
 
-export default function InputNotes({clickGenerate, setTextInput}) {
+export default function InputNotes({clickGenerate}) {
 
     const defaultValue = "Example: Einstein was born on March 14, 1879, in Ulm, Germany, a town that today has " +
         "a population of just more than 120,000. There is a small commemorative plaque where his house " +
@@ -41,6 +42,13 @@ export default function InputNotes({clickGenerate, setTextInput}) {
     const [error, setError] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [recordedInput, setRecordedInput] = useState("")
+
+    const [textInput, setTextInput ] = useState('')
+
+    const API_KEY ='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'
+    const openai = new OpenAIApi(new Configuration({
+        apiKey: API_KEY
+    }))
 
 
     /**
@@ -63,6 +71,14 @@ export default function InputNotes({clickGenerate, setTextInput}) {
         } else if (inputValidation({typedCharacters}) === false){
             setError(true)
         }
+    }
+    const onClick = () => {
+        openai.createChatCompletion({
+            model: "gpt-3.5-turbo",
+            messages: [{role: "user", content: `Can you generate a list of questions and answers using the following input text?: ${textInput}`}]
+        }).then(res => {
+            console.log(res.data.choices[0].message.content)
+        })
     }
 
 
@@ -103,12 +119,12 @@ export default function InputNotes({clickGenerate, setTextInput}) {
                 variant={"filled"}
                 defaultValue={defaultValue}
                 rows={10}
-                onChange={handleCharacterCount}
+                onChange={(e) => {handleCharacterCount(e); setTextInput(e.target.value);}}
                 error={error}
             ></TextField>
             <Button disabled={error}
                     onClick={() => {
-                        clickGenerate(); setTextInput(recordedInput);}}
+                        clickGenerate(); onClick()}}
                     sx={{
                         float: 'right',
                         "&.Mui-disabled": {backgroundColor: 'lightGrey', color: 'white'},

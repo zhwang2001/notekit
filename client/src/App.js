@@ -7,26 +7,27 @@ function App() {
     //define state management for which page is being shown
     const [pageIndex, setPageIndex] = useState(0)
     //define state management for recording the values of user input
-    const [textInput, setTextInput ] = useState('')
+    //const [textInput, setTextInput ] = useState('')
 
     const handlePageChange = () => {
         setPageIndex(pageIndex + 1)
     }
-    const pages = [<InputNotes clickGenerate={handlePageChange} setTextInput={setTextInput}/>, <FlashCards/>]
+    const pages = [<InputNotes clickGenerate={handlePageChange} />, <FlashCards/>]
 
     const API_KEY ='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'
     const openai = new OpenAIApi(new Configuration({
         apiKey: API_KEY
     }))
 
-    useEffect(() =>{
-            openai.createChatCompletion({
-                model: "gpt-3.5-turbo",
-                messages: [{role: "user", content: `Can you provide a valid piece of text to generate questions and answers using the following input?: ${textInput}`}]
-            }).then(res => {
-                console.log(res.data.choices[0].message.content)
-            })
-    },[textInput])
+    // useEffect(() =>{
+    //         openai.createChatCompletion({
+    //             model: "gpt-3.5-turbo",
+    //             messages: [{role: "user", content: `Can you generate a list of questions and answers using the following input text?: ${textInput}`}]
+    //         }).then(res => {
+    //             console.log(res.data.choices[0].message.content)
+    //         })
+    // },[textInput])
+
 
     return (
         <div style={{
