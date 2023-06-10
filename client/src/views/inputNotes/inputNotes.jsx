@@ -9,10 +9,11 @@ import {Configuration, OpenAIApi} from "openai";
 //loading indicator
 //back button
 //ability edit and make own flashcards
-//minimum string length is 300
 
-//set state for default value prompt
 //validation
+//minimum string length is 300
+//utilize better prompt
+
 //add error message
 //aria text label
 //best colors

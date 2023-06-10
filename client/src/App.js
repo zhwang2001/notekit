@@ -16,7 +16,6 @@ function App() {
         setPageIndex(pageIndex + 1)
     }
 
-
     //initialization
     const API_KEY = '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'
     const openai = new OpenAIApi(new Configuration({

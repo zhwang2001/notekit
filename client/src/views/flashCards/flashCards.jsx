@@ -1,4 +1,4 @@
-import {Card, CardContent, Divider, IconButton, Typography} from "@mui/material";
+import {Card, CardContent, CircularProgress, Divider, IconButton, Typography} from "@mui/material";
 import {IoCopyOutline, IoPencilOutline, IoTrashOutline} from "react-icons/io5";
 
 /**
@@ -14,9 +14,11 @@ export default function FlashCards({response}) {
             <Typography variant={"h2"} color={"text.primary"} sx={{margin: '30px 0px 30px 10px', width: '100%'}}>
                 Quiz
             </Typography>
-            {response.map((data, index) => {
-                return (<FlashCard data={data}/>)
-            })}
+            {response
+                ? response.map((data, index) => {
+                    return (<FlashCard data={data}/>)
+                })
+                : <div style={{width: '100%'}}><CircularProgress size={30}/></div>}
         </CardContent>
     )
 }
