@@ -24,6 +24,7 @@ function App() {
     }))
     //define state management for storing gpt response
     const [response, setResponse] = useState([])
+    //array that stores the different pages viewed by user
     const pages = [
         <InputNotes clickGenerate={handlePageChange} setResponse={setResponse}/>,
         <FlashCards response={response}/>
