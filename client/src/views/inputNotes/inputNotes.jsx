@@ -28,7 +28,8 @@ import {Configuration, OpenAIApi} from "openai";
  */
 export default function InputNotes({clickGenerate, setResponse}) {
 
-    const defaultValue = "Example: Einstein was born on March 14, 1879, in Ulm, Germany, a town that today has " +
+    //defaultValue for the textField component
+    const initialString = "Example: Einstein was born on March 14, 1879, in Ulm, Germany, a town that today has " +
         "a population of just more than 120,000. There is a small commemorative plaque where his house " +
         "used to stand (it was destroyed during World War II). The family moved to Munich shortly " +
         "after his birth, according to the Nobel Prize website, \n\n" +
@@ -36,19 +37,23 @@ export default function InputNotes({clickGenerate, setResponse}) {
         "faced problems with running his own business. Einstein's father, Hermann, ran an " +
         "electrochemical factory and his mother Pauline took care of Albert and his younger sister, " +
         "Maria."
+    //set the characterLimit for the textField component
     const characterLimit = 100000;
-    const [characterCount, setCharacterCount] = useState(`${defaultValue.length} / ${characterLimit}`);
+
+    //define state management for managing the character counter
+    const [characterCount, setCharacterCount] = useState(`${initialString.length} / ${characterLimit}`);
+    //define state management for managing error state
     const [error, setError] = useState(false);
+    //define state management for displaying error messages
     const [errorMessage, setErrorMessage] = useState("");
-    const [recordedInput, setRecordedInput] = useState("")
+    //define state management for managing the user input
+    const [textInput, setTextInput] = useState(initialString)
 
-    const [textInput, setTextInput] = useState('')
-
+    //chatGPT initialization
     const API_KEY = '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'
     const openai = new OpenAIApi(new Configuration({
         apiKey: API_KEY
     }))
-
 
     /**
      * @brief An event handler that displays the number of characters already used and validates the input
@@ -65,7 +70,7 @@ export default function InputNotes({clickGenerate, setResponse}) {
         //if RegExp test returns true
         if (inputValidation({typedCharacters}) === true) {
             setError(false)
-            setRecordedInput(e.target.value)
+            setTextInput(e.target.value);
             //if RegExp test returns false
         } else if (inputValidation({typedCharacters}) === false) {
             setError(true)
@@ -133,11 +138,10 @@ export default function InputNotes({clickGenerate, setResponse}) {
                 helperText={characterCount}
                 type={"string"}
                 variant={"filled"}
-                defaultValue={defaultValue}
+                defaultValue={initialString}
                 rows={10}
                 onChange={(e) => {
                     handleCharacterCount(e);
-                    setTextInput(e.target.value);
                 }}
                 error={error}
             ></TextField>
