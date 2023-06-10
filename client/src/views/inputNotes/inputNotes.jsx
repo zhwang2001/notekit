@@ -1,16 +1,17 @@
 import {Button, Divider, IconButton, InputAdornment, TextField, Typography} from "@mui/material";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {inputValidation} from "./utils/validation";
 import {BsArrowRight} from "react-icons/bs";
 import {Configuration, OpenAIApi} from "openai";
 
 //TODO
-//__minimum string length is 300
-//__maximum string length is 10000
-//__company name
 
-//comment code
-//chatgpt portion without actual api
+//loading indicator
+//back button
+//ability edit and make own flashcards
+//minimum string length is 300
+
+//set state for default value prompt
 //validation
 //add error message
 //aria text label
@@ -25,9 +26,7 @@ import {Configuration, OpenAIApi} from "openai";
  * @param {setState} setTextInput this parameter sets the text input to the user's input
  * @returns {JSX.Element} this function returns 2 different input fields
  */
-
-
-export default function InputNotes({clickGenerate}) {
+export default function InputNotes({clickGenerate, setResponse}) {
 
     const defaultValue = "Example: Einstein was born on March 14, 1879, in Ulm, Germany, a town that today has " +
         "a population of just more than 120,000. There is a small commemorative plaque where his house " +
@@ -43,9 +42,9 @@ export default function InputNotes({clickGenerate}) {
     const [errorMessage, setErrorMessage] = useState("");
     const [recordedInput, setRecordedInput] = useState("")
 
-    const [textInput, setTextInput ] = useState('')
+    const [textInput, setTextInput] = useState('')
 
-    const API_KEY ='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'
+    const API_KEY = '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'
     const openai = new OpenAIApi(new Configuration({
         apiKey: API_KEY
     }))
@@ -64,23 +63,40 @@ export default function InputNotes({clickGenerate}) {
         const charactersUsed = `${typedCharacters} / ${characterLimit}`;
         setCharacterCount(charactersUsed);
         //if RegExp test returns true
-        if (inputValidation({typedCharacters}) === true){
+        if (inputValidation({typedCharacters}) === true) {
             setError(false)
             setRecordedInput(e.target.value)
-        //if RegExp test returns false
-        } else if (inputValidation({typedCharacters}) === false){
+            //if RegExp test returns false
+        } else if (inputValidation({typedCharacters}) === false) {
             setError(true)
         }
     }
-    const onClick = () => {
+
+    /**
+     * @brief A function responsible for calling the api
+     *
+     * @see setResponse sets the response to be utilized by other components
+     */
+    const submitPrompt = () => {
         openai.createChatCompletion({
             model: "gpt-3.5-turbo",
-            messages: [{role: "user", content: `Can you generate a list of questions and answers using the following input text?: ${textInput}`}]
+            messages: [{
+                role: "user",
+                content: `Can you generate a list of questions and answers using the following input text?: ${textInput}
+                 ,start each question with "Q" and each answer with "A"`
+            }]
         }).then(res => {
-            console.log(res.data.choices[0].message.content)
+            //convert the string response into a nested array
+            const response = res.data.choices[0].message.content
+            const arrResponse = response.split('\n\n')
+
+            const nestedArray = []
+            arrResponse.map(res => {
+                nestedArray.push(res.split('\n'))
+            })
+            setResponse(nestedArray)
         })
     }
-
 
 
     return (
@@ -119,12 +135,17 @@ export default function InputNotes({clickGenerate}) {
                 variant={"filled"}
                 defaultValue={defaultValue}
                 rows={10}
-                onChange={(e) => {handleCharacterCount(e); setTextInput(e.target.value);}}
+                onChange={(e) => {
+                    handleCharacterCount(e);
+                    setTextInput(e.target.value);
+                }}
                 error={error}
             ></TextField>
             <Button disabled={error}
                     onClick={() => {
-                        clickGenerate(); onClick()}}
+                        clickGenerate();
+                        submitPrompt()
+                    }}
                     sx={{
                         float: 'right',
                         "&.Mui-disabled": {backgroundColor: 'lightGrey', color: 'white'},
@@ -134,7 +155,9 @@ export default function InputNotes({clickGenerate}) {
                         margin: '10px',
                         '&:hover': {backgroundColor: 'black', color: 'aqua'},
 
-                    }}><Typography>Generate</Typography></Button>
+                    }}>
+                <Typography>Generate</Typography>
+            </Button>
         </div>
     )
 }

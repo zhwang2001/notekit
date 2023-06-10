@@ -1,32 +1,33 @@
 import './App.css';
-import {useEffect, useState} from 'react'
+import {useState} from 'react'
 import InputNotes from "./views/inputNotes/inputNotes";
 import FlashCards from "./views/flashCards/flashCards"
 import {Configuration, OpenAIApi} from "openai";
+
 function App() {
     //define state management for which page is being shown
     const [pageIndex, setPageIndex] = useState(0)
-    //define state management for recording the values of user input
-    //const [textInput, setTextInput ] = useState('')
-
+    /**
+     * @brief An event handler for changing the page once generate button has been clicked
+     *
+     * @see setPageIndex sets the index to the current index + 1
+     */
     const handlePageChange = () => {
         setPageIndex(pageIndex + 1)
     }
-    const pages = [<InputNotes clickGenerate={handlePageChange} />, <FlashCards/>]
 
-    const API_KEY ='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'
+
+    //initialization
+    const API_KEY = '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'
     const openai = new OpenAIApi(new Configuration({
         apiKey: API_KEY
     }))
-
-    // useEffect(() =>{
-    //         openai.createChatCompletion({
-    //             model: "gpt-3.5-turbo",
-    //             messages: [{role: "user", content: `Can you generate a list of questions and answers using the following input text?: ${textInput}`}]
-    //         }).then(res => {
-    //             console.log(res.data.choices[0].message.content)
-    //         })
-    // },[textInput])
+    //define state management for storing gpt response
+    const [response, setResponse] = useState([])
+    const pages = [
+        <InputNotes clickGenerate={handlePageChange} setResponse={setResponse}/>,
+        <FlashCards response={response}/>
+    ]
 
 
     return (
