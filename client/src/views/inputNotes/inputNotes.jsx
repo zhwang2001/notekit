@@ -1,9 +1,32 @@
 import {Button, Divider, IconButton, InputAdornment, TextField, Typography} from "@mui/material";
-import {useState} from "react";
-import {inputValidation} from "./validation";
+import {useEffect, useState} from "react";
+import {inputValidation} from "./utils/validation";
 import {BsArrowRight} from "react-icons/bs";
 
-export default function InputNotes({clickGenerate}) {
+//TODO
+//__minimum string length is 300
+//__maximum string length is 10000
+//__company name
+
+//comment code
+//chatgpt portion without actual api
+//validation
+//add error message
+//aria text label
+//best colors
+
+/**
+ * @constructor
+ *
+ * @brief A functional UI component that allows user to submit text through a link or copy and paste their notes
+ *
+ * @param {function} clickGenerate this parameter allows the parent component to access the child's onClick event listener
+ * @param {setState} setTextInput this parameter sets the text input to the user's input
+ * @returns {JSX.Element} this function returns 2 different input fields
+ */
+
+
+export default function InputNotes({clickGenerate, setTextInput}) {
 
     const defaultValue = "Example: Einstein was born on March 14, 1879, in Ulm, Germany, a town that today has " +
         "a population of just more than 120,000. There is a small commemorative plaque where his house " +
@@ -14,30 +37,34 @@ export default function InputNotes({clickGenerate}) {
         "electrochemical factory and his mother Pauline took care of Albert and his younger sister, " +
         "Maria."
     const characterLimit = 100000;
-    const [characterCount, setCharacterCount] = useState(`${defaultValue.length} / ${characterLimit}`)
-    const [validInput, setValidInput] = useState(false)
-    const [errorMessage, setErrorMessage] = useState("")
+    const [characterCount, setCharacterCount] = useState(`${defaultValue.length} / ${characterLimit}`);
+    const [error, setError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
+    const [recordedInput, setRecordedInput] = useState("")
+
 
     /**
+     * @brief An event handler that displays the number of characters already used and validates the input
      *
+     * @param {Object} e this parameter contains the event data
+     * @see setCharacterCount sets the new character count string
+     * @see setError sets error as true or false
+     * @see setRecordedInput sets text input to user input
      */
     function handleCharacterCount(e) {
         const typedCharacters = e.target.value.length;
         const charactersUsed = `${typedCharacters} / ${characterLimit}`;
         setCharacterCount(charactersUsed);
-        setValidInput(!inputValidation({typedCharacters}));
+        //if RegExp test returns true
+        if (inputValidation({typedCharacters}) === true){
+            setError(false)
+            setRecordedInput(e.target.value)
+        //if RegExp test returns false
+        } else if (inputValidation({typedCharacters}) === false){
+            setError(true)
+        }
     }
 
-    //TODO
-    //__minimum string length is 300
-    //__maximum string length is 10000
-    //comment code
-    //chatgpt portion without actual api
-    //validation
-    //add error message
-    //aria text label
-    //company name
-    //best colors
 
 
     return (
@@ -77,10 +104,11 @@ export default function InputNotes({clickGenerate}) {
                 defaultValue={defaultValue}
                 rows={10}
                 onChange={handleCharacterCount}
-                error={validInput}
+                error={error}
             ></TextField>
-            <Button disabled={validInput}
-                    onClick={clickGenerate}
+            <Button disabled={error}
+                    onClick={() => {
+                        clickGenerate(); setTextInput(recordedInput);}}
                     sx={{
                         float: 'right',
                         "&.Mui-disabled": {backgroundColor: 'lightGrey', color: 'white'},
