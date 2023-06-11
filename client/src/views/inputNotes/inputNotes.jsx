@@ -5,11 +5,8 @@ import {BsArrowRight} from "react-icons/bs";
 import {Configuration, OpenAIApi} from "openai";
 
 //TODO
-
-//loading indicator
-//back button
 //ability edit and make own flashcards
-
+//organize styles
 //validation
 //minimum string length is 300
 //utilize better prompt
@@ -23,11 +20,11 @@ import {Configuration, OpenAIApi} from "openai";
  *
  * @brief A functional UI component that allows user to submit text through a link or copy and paste their notes
  *
- * @param {function} clickGenerate this parameter allows the parent component to access the child's onClick event listener
+ * @param {function} handlePageChange this parameter allows the parent component to access the child's onClick event listener
  * @param {setState} setTextInput this parameter sets the text input to the user's input
  * @returns {JSX.Element} this function returns 2 different input fields
  */
-export default function InputNotes({clickGenerate, setResponse}) {
+export default function InputNotes({handlePageChange, setResponse}) {
 
     //defaultValue for the textField component
     const initialString = "Example: Einstein was born on March 14, 1879, in Ulm, Germany, a town that today has " +
@@ -148,8 +145,8 @@ export default function InputNotes({clickGenerate, setResponse}) {
             ></TextField>
             <Button disabled={error}
                     onClick={() => {
-                        clickGenerate();
-                        submitPrompt()
+                        handlePageChange('forward');
+                        submitPrompt();
                     }}
                     sx={{
                         float: 'right',
