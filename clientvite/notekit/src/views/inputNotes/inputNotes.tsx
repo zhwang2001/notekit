@@ -1,7 +1,7 @@
 import {Button, Divider, TextField, Typography} from "@mui/material";
 import {useState} from "react";
 import {inputValidation} from "./utils/validation";
-import {getQuiz} from "../../api/index.ts";
+import {getQuiz} from "../../api";
 
 //TODO
 //ability edit and make own flashcards
@@ -18,10 +18,9 @@ type pageChangeFunction = (direction: string) => void;
  *
  * @brief A functional UI component that allows user to submit text through a link or copy and paste their notes
  *
- * @param {object} props the props object
- * @param {function} handlePageChange this parameter allows the parent component to access the child's onClick event listener
- * @param {pageChangeFunction} setTextInput this parameter sets the text input to the user's input
- * @returns {JSX.Element} this function returns 2 different input fields
+ * @param {object} props the props object. Has properties handlePageChange {function} this parameter allows the parent component to access the child's onClick event listener and {setResponse} this parameter sets the text input to the user's input
+ *
+ * @returns {React.FC} this function returns 2 different input fields
  */
 export default function InputNotes(props: {
     handlePageChange: pageChangeFunction,
