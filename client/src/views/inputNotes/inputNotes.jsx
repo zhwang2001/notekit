@@ -80,7 +80,7 @@ export default function InputNotes({handlePageChange, setResponse}) {
      *
      * @see setResponse sets the response to be utilized by other components
      */
-    const submitPrompt = () => {
+    const submitPrompt = async () => {
         openai.createChatCompletion({
             model: "gpt-3.5-turbo",
             messages: [{

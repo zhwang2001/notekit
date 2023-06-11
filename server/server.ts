@@ -11,8 +11,7 @@ const port = process.env.PORT || 5000;
 app.use(bodyParser.json({ limit: "30mb",}));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 
-app.use('/quiz', quizRoutes)
-
+app.use('/quiz', quizRoutes);
 app.listen(port, () => {
     console.log(`[server]: Server is running at http://localhost:${port}`);
 });
