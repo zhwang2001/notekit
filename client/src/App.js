@@ -14,13 +14,11 @@ function App() {
      * @see setPageIndex sets the index to the current index + 1
      */
     const handlePageChange = (direction) => {
-        if (direction === "forward") {
+        if (direction === "forward")
             setPageIndex(pageIndex + 1)
-        } else if (direction === "backward") {
+        else if (direction === "backward")
             setPageIndex(pageIndex - 1)
-        }
     }
-
     //define state management for storing gpt response
     const [response, setResponse] = useState([])
     //array that stores the different pages viewed by user

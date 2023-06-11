@@ -81,15 +81,15 @@ export default function InputNotes({handlePageChange, setResponse}) {
      * @see setRecordedInput sets text input to user input
      */
     function handleCharacterCount(e) {
-        const typedCharacters = e.target.value.length;
-        const charactersUsed = `${typedCharacters} / ${characterLimit}`;
+        const numCharacters = e.target.value.length;
+        const charactersUsed = `${numCharacters} / ${characterLimit}`;
         setCharacterCount(charactersUsed);
         //if RegExp test returns true
-        if (inputValidation({typedCharacters}) === true) {
+        if (inputValidation(numCharacters) === true) {
             setError(false)
             setTextInput(e.target.value);
             //if RegExp test returns false
-        } else if (inputValidation({typedCharacters}) === false) {
+        } else if (inputValidation(numCharacters) === false) {
             setError(true)
         }
     }
