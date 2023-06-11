@@ -2,7 +2,6 @@ import './App.css';
 import {useState} from 'react'
 import InputNotes from "./views/inputNotes/inputNotes";
 import FlashCards from "./views/flashCards/flashCards"
-import {Configuration, OpenAIApi} from "openai";
 
 function App() {
     //define state management for which page is being shown
@@ -12,21 +11,20 @@ function App() {
      *
      * @see setPageIndex sets the index to the current index + 1
      */
-    const handlePageChange = () => {
-        setPageIndex(pageIndex + 1)
+    const handlePageChange = (direction) => {
+        if (direction === "forward") {
+            setPageIndex(pageIndex + 1)
+        } else if (direction === "backward") {
+            setPageIndex(pageIndex - 1)
+        }
     }
 
-    //initialization
-    const API_KEY = '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'
-    const openai = new OpenAIApi(new Configuration({
-        apiKey: API_KEY
-    }))
     //define state management for storing gpt response
     const [response, setResponse] = useState([])
     //array that stores the different pages viewed by user
     const pages = [
-        <InputNotes clickGenerate={handlePageChange} setResponse={setResponse}/>,
-        <FlashCards response={response}/>
+        <InputNotes handlePageChange={handlePageChange} setResponse={setResponse}/>,
+        <FlashCards handlePageChange={handlePageChange} response={response}/>
     ]
 
 

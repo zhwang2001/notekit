@@ -1,34 +1,44 @@
-import {Card, CardContent, CircularProgress, Divider, IconButton, Typography} from "@mui/material";
+import {Card, CardContent, Divider, IconButton, LinearProgress, Typography} from "@mui/material";
 import {IoCopyOutline, IoPencilOutline, IoTrashOutline} from "react-icons/io5";
+import {IoIosArrowBack} from "react-icons/io";
 
 /**
  * @brief A functional UI component that displays the quiz name and all the flashcards
  *
  * @param {array} response this parameter contains the nested array obtained from ChatGPT's response
+ * @param {function} handlePageChange this parameter contains the logic for changing pages
  * @returns {JSX.Element} the title and an array of flashcards
  * @constructor
  */
-export default function FlashCards({response}) {
+export default function FlashCards({handlePageChange, response}) {
     return (
         <CardContent sx={{height: '100vh', padding: '10%'}}>
-            <Typography variant={"h2"} color={"text.primary"} sx={{margin: '30px 0px 30px 10px', width: '100%'}}>
-                Quiz
-            </Typography>
-            {response
+            <div style={{display: 'flex', flexDirection: 'row'}}>
+                <div style={{display: 'flex', alignItems: 'center'}}>
+                    <IconButton onClick={() => handlePageChange("backward")}>
+                        <IoIosArrowBack size={35}/>
+                    </IconButton>
+                </div>
+                <Typography variant={"h2"} color={"text.primary"} sx={{margin: '30px 0px 30px 10px', width: '100%'}}>
+                    Quiz
+                </Typography>
+            </div>
+            {response.length !== 0
                 ? response.map((data, index) => {
                     return (<FlashCard data={data}/>)
                 })
-                : <div style={{width: '100%'}}><CircularProgress size={30}/></div>}
+                : <div style={{width: '100%'}}><LinearProgress size={30}/></div>}
         </CardContent>
     )
 }
 
 /**
+ * @constructor
+ *
  * @brief A functional UI component that returns an individual flashcard
  *
  * @param {array} data parameter has an array containing the question and answer to flashcard
  * @returns {JSX.Element} the question and answer to the flashcard as well as buttons to interact with the flashcard
- * @constructor
  */
 function FlashCard({data}) {
     return (
