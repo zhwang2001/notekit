@@ -105,7 +105,7 @@ export default function InputNotes({handlePageChange, setResponse}) {
     return (
         <div style={{width: '30vw', textAlign: 'center'}}>
             <Typography variant="h3" color="text.primary" sx={{width: '100%'}}>
-                Enter a URL or your Notes and Eurodam will generate a quiz automatically from them
+                Enter a URL or your Notes and Notekit will generate a quiz automatically from them
             </Typography>
             <div style={{padding: '20px'}}>
                 <TextField

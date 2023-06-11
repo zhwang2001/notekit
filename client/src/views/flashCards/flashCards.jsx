@@ -1,4 +1,4 @@
-import {Card, CardContent, Divider, IconButton, LinearProgress, Typography} from "@mui/material";
+import {Card, CardContent, Divider, IconButton,  Typography} from "@mui/material";
 import {IoCopyOutline, IoPencilOutline, IoTrashOutline} from "react-icons/io5";
 import {IoIosArrowBack} from "react-icons/io";
 
@@ -23,11 +23,9 @@ export default function FlashCards({handlePageChange, response}) {
                     Quiz
                 </Typography>
             </div>
-            {response.length !== 0
-                ? response.map((data, index) => {
+            {response.map((data, index) => {
                     return (<FlashCard data={data}/>)
-                })
-                : <div style={{width: '100%'}}><LinearProgress size={30}/></div>}
+            })}
         </CardContent>
     )
 }
