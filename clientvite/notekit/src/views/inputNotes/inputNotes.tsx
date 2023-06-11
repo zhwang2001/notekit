@@ -25,7 +25,7 @@ type pageChangeFunction = (direction: string) => void;
  */
 export default function InputNotes(props: {
     handlePageChange: pageChangeFunction,
-    setResponse: React.Dispatch<React.SetStateAction<never[]>>
+    setResponse: React.Dispatch<React.SetStateAction<string[][]>>
 }) {
 
     //defaultValue for the textField component
@@ -79,24 +79,9 @@ export default function InputNotes(props: {
     const submitPrompt = async () => {
         const response = await getQuiz({prompt: textInput});
         console.log(response);
-        // openai.createChatCompletion({
-        //     model: "gpt-3.5-turbo",
-        //     messages: [{
-        //         role: "user",
-        //         content: `Can you generate a list of questions and answers using the following input text?: ${textInput}
-        //          ,start each question with "Q" and each answer with "A"`
-        //     }]
-        // }).then(res => {
-        //     //convert the string response into a nested array
-        //     const response = res.data.choices[0].message.content
-        //     const arrResponse = response.split('\n\n')
-        //
-        //     const nestedArray = []
-        //     arrResponse.map(res => {
-        //         nestedArray.push(res.split('\n'))
-        //     })
-        //     setResponse(nestedArray)
-        // })
+        const questionsAndAnswers: Object = response.data;
+        const nestedArray: string[][] = Object.values(questionsAndAnswers);
+        props.setResponse(nestedArray);
     }
 
 

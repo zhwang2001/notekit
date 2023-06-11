@@ -20,7 +20,7 @@ function App() {
             setPageIndex(pageIndex - 1)
     }
     //define state management for storing gpt response
-    const [response, setResponse] = useState([])
+    const [response, setResponse] = useState<string[][]>([]);
     //array that stores the different pages viewed by user
     const pages = [
         <InputNotes handlePageChange={handlePageChange} setResponse={setResponse}/>,
