@@ -5,7 +5,6 @@ import {BsArrowRight} from "react-icons/bs";
 import {Configuration, OpenAIApi} from "openai";
 
 //TODO
-//back button
 //ability edit and make own flashcards
 //organize styles
 //validation
