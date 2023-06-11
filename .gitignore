@@ -4,6 +4,7 @@
 /node_modules
 /client/node_modules
 /server/node_modules
+/clientvite/notekit/node_modules
 /.pnp
 .pnp.js
 
@@ -26,3 +27,12 @@ yarn-error.log*
 
 #ide
 /.idea
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
