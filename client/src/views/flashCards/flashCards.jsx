@@ -1,11 +1,11 @@
-import {Card, CardContent, Divider, IconButton,  Typography} from "@mui/material";
+import {Card, CardContent, Divider, IconButton, Typography} from "@mui/material";
 import {IoCopyOutline, IoPencilOutline, IoTrashOutline} from "react-icons/io5";
 import {IoIosArrowBack} from "react-icons/io";
 
 /**
  * @brief A functional UI component that displays the quiz name and all the flashcards
  *
- * @param {array} response this parameter contains the nested array obtained from ChatGPT's response
+ * @param {array} response this parameter contains the nested array obtained from response
  * @param {function} handlePageChange this parameter contains the logic for changing pages
  * @returns {JSX.Element} the title and an array of flashcards
  * @constructor
@@ -24,7 +24,7 @@ export default function FlashCards({handlePageChange, response}) {
                 </Typography>
             </div>
             {response.map((data, index) => {
-                    return (<FlashCard data={data}/>)
+                return (<FlashCard data={data}/>)
             })}
         </CardContent>
     )

@@ -1,14 +1,12 @@
-import {Button, Divider, IconButton, InputAdornment, TextField, Typography} from "@mui/material";
+import {Button, Divider, TextField, Typography} from "@mui/material";
 import {useState} from "react";
 import {inputValidation} from "./utils/validation";
-import {BsArrowRight} from "react-icons/bs";
 import {Configuration, OpenAIApi} from "openai";
 
 //TODO
 //ability edit and make own flashcards
 //organize styles
 //validation
-//minimum string length is 300
 //utilize better prompt
 
 //add error message
@@ -54,6 +52,27 @@ export default function InputNotes({handlePageChange, setResponse}) {
     }))
 
     /**
+     * @async
+     *
+     * @Brief Makes a POST request to the specified URL and returns the JSON response.
+     *
+     * @returns {Promise<any>} A Promise that resolves to the JSON response.
+     */
+    async function postData() {
+        const response = await fetch('http://127.0.0.1:5000/quiz', {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    // 'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: {prompt: textInput},
+            }
+        )
+        return response.json();
+    }
+
+
+    /**
      * @brief An event handler that displays the number of characters already used and validates the input
      *
      * @param {Object} e this parameter contains the event data
@@ -75,60 +94,12 @@ export default function InputNotes({handlePageChange, setResponse}) {
         }
     }
 
-    /**
-     * @brief A function responsible for calling the api
-     *
-     * @see setResponse sets the response to be utilized by other components
-     */
-    const submitPrompt = () => {
-        openai.createChatCompletion({
-            model: "gpt-3.5-turbo",
-            messages: [{
-                role: "user",
-                content: `Can you generate a list of questions and answers using the following input text?: ${textInput}
-                 ,start each question with "Q" and each answer with "A"`
-            }]
-        }).then(res => {
-            //convert the string response into a nested array
-            const response = res.data.choices[0].message.content
-            const arrResponse = response.split('\n\n')
-
-            const nestedArray = []
-            arrResponse.map(res => {
-                nestedArray.push(res.split('\n'))
-            })
-            setResponse(nestedArray)
-        })
-    }
-
-
     return (
         <div style={{width: '30vw', textAlign: 'center'}}>
-            <Typography variant="h3" color="text.primary" sx={{width: '100%'}}>
-                Enter a URL or your Notes and Notekit will generate a quiz automatically from them
+            <Typography variant="h3" color="text.primary" sx={{width: '100%', fontWeight: '600'}}>
+                Notekit will generate a quiz from your notes
             </Typography>
-            <div style={{padding: '20px'}}>
-                <TextField
-                    fullWidth
-                    placeholder={"ex. https://en.wikipedia.org/wiki/Ship"}
-                    variant={"standard"}
-                    InputProps={{
-                        endAdornment: (
-                            <InputAdornment position="end">
-                                <IconButton sx={{
-                                    fontSize: '15px',
-                                    padding: '5px',
-                                    '&:hover': {backgroundColor: '#253859', color: 'aqua'}
-                                }}>
-                                    <BsArrowRight/>
-                                </IconButton>
-                            </InputAdornment>
-                        )
-                    }}
-                />
-            </div>
-            <Divider orientation={"horizontal"}
-                     sx={{width: '100%', fontSize: '20px', padding: '20px 0px 45px 0px'}}>or</Divider>
+            <Divider sx={{margin: '50px 0px 50px 0px', width: '100%'}}/>
             <TextField
                 aria-label={"Enter Text Here"}
                 fullWidth
@@ -146,11 +117,11 @@ export default function InputNotes({handlePageChange, setResponse}) {
             <Button disabled={error}
                     onClick={() => {
                         handlePageChange('forward');
-                        submitPrompt();
+                        postData().then((e) => console.log(e));
                     }}
                     sx={{
                         float: 'right',
-                        "&.Mui-disabled": {backgroundColor: 'lightGrey', color: 'white'},
+                        "&.Mui-disabled": {backgroundColor: 'lightGrey', color: 'darkGrey'},
                         backgroundColor: '#253859',
                         color: 'aqua',
                         padding: '10px',
@@ -158,7 +129,7 @@ export default function InputNotes({handlePageChange, setResponse}) {
                         '&:hover': {backgroundColor: 'black', color: 'aqua'},
 
                     }}>
-                <Typography>Generate</Typography>
+                <Typography variant={"h6"}>Generate</Typography>
             </Button>
         </div>
     )
