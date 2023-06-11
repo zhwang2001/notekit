@@ -36,6 +36,8 @@ function App() {
             justifyContent: 'center',
             alignItems: 'center',
             flexFlow: 'column nowrap',
+            backgroundImage: 'url("https://img.freepik.com/free-vector/winter-blue-pink-gradient-background-vector_53876-117276.jpg?w=1800&t=st=1686457391~exp=1686457991~hmac=9713980c47b11619b1f3582574b0bcc57f8571209cc1a3a32c4f52a8786abc10")',
+            backgroundSize: '100% auto'
         }}>
             {pages[pageIndex]}
         </div>
