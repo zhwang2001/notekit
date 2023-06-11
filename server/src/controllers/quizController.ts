@@ -35,7 +35,7 @@ export const getQuiz = async (req: Request, res: Response) => {
         model: "gpt-3.5-turbo",
         messages: [{
             role: "user",
-            content: `Can you generate a list of questions and answers using the following input text?: ${query}. The expected output should be in JSON format with example format being {Placeholder Question 1: Answer 1, Placeholder Question 2: Answer 2, ...}`
+            content: `Can you generate a list of very high quality questions and answers using the following input text?: ${query}. The expected output should be in JSON format with example format being {Placeholder Question 1: Answer 1, Placeholder Question 2: Answer 2, ...}`
         }]
     })
     //convert the string response into a nested array

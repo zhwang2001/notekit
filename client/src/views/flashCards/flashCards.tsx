@@ -1,44 +1,56 @@
-import {Card, CardContent, Divider, IconButton,  Typography} from "@mui/material";
+import {Card, CardContent, Divider, IconButton, Typography} from "@mui/material";
 import {IoCopyOutline, IoPencilOutline, IoTrashOutline} from "react-icons/io5";
 import {IoIosArrowBack} from "react-icons/io";
-type pageChangeFunction = (direction: string) => void;
+
+interface FlashCardsProps {
+    handlePageChange: (direction: string) => void;
+    response: string[][];
+    setResponse: React.Dispatch<React.SetStateAction<any>>;
+}
+
 /**
- * @brief A functional UI component that displays the quiz name and all the flashcards
+ * @brief A functional UI component that displays the quiz name and all the flashcards.
  *
- * @param {array} response this parameter contains the nested array obtained from ChatGPT's response
- * @param {function} handlePageChange this parameter contains the logic for changing pages
- * @returns {JSX.Element} the title and an array of flashcards
- * @constructor
+ * @param {FlashCardsProps} props - The component props.
+ * @returns {JSX.Element} The title and an array of flashcards.
  */
-export default function FlashCards(props: {handlePageChange: pageChangeFunction, response: string[][]}) {
+const FlashCards: React.FC<FlashCardsProps> = (props) => {
+    const {response, handlePageChange, setResponse} = props;
+
     return (
         <CardContent sx={{height: '100vh', padding: '10%'}}>
             <div style={{display: 'flex', flexDirection: 'row'}}>
                 <div style={{display: 'flex', alignItems: 'center'}}>
-                    <IconButton onClick={() => props.handlePageChange("backward")}>
+                    <IconButton onClick={() => {
+                        handlePageChange("backward");
+                        setResponse([])
+                    }}>
                         <IoIosArrowBack size={35}/>
                     </IconButton>
                 </div>
-                <Typography variant={"h2"} color={"text.primary"} sx={{margin: '30px 0px 30px 10px', width: '100%'}}>
+                <Typography variant="h2" color="text.primary" sx={{margin: '30px 0px 30px 10px', width: '100%'}}>
                     Quiz
                 </Typography>
             </div>
-            {props.response.map((data) => {
-                return (<FlashCard data={data}/>)
-            })}
+            {response.map((data, index) => (
+                <FlashCard key={index} data={data}/>
+            ))}
         </CardContent>
-    )
-}
+    );
+};
+
+export default FlashCards
 
 /**
  * @constructor
  *
  * @brief A functional UI component that returns an individual flashcard
  *
+ * @param {object} props the props object
  * @param {array} data parameter has an array containing the question and answer to flashcard
  * @returns {JSX.Element} the question and answer to the flashcard as well as buttons to interact with the flashcard
  */
-function FlashCard(props: {data: Array<string>}){
+function FlashCard(props: { data: Array<string> }) {
     return (
         <CardContent sx={{width: '30vw', display: 'flex', flexFlow: 'row nowrap'}}>
             <Card sx={{

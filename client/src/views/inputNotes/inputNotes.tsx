@@ -8,6 +8,8 @@ import {getQuiz} from "../../api";
 //organize styles
 //validation
 //utilize better prompt
+//extract text pdf
+//fix: clicking back button does not reset the flashcard
 
 //add error message
 //aria text label

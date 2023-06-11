@@ -7,7 +7,7 @@ import backgroundImage from './assets/background_image.jpg'
 
 function App() {
     //define state management for which page is being shown
-    const [pageIndex, setPageIndex] = useState(0)
+    const [pageIndex, setPageIndex] = useState<number>(0)
     /**
      * @brief An event handler for changing the page once generate button has been clicked
      *
@@ -25,7 +25,7 @@ function App() {
     const pages = [
         <InputNotes handlePageChange={handlePageChange} setResponse={setResponse}/>,
         response.length !== 0
-            ? <FlashCards handlePageChange={handlePageChange} response={response}/>
+            ? <FlashCards handlePageChange={handlePageChange} response={response} setResponse={setResponse}/>
             : <div style={{width: '30vw'}}><LinearProgress sx={{width: '100%'}}/></div>
     ]
 
