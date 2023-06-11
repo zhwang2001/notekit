@@ -1,14 +1,12 @@
-import {Button, Divider, IconButton, InputAdornment, TextField, Typography} from "@mui/material";
+import {Button, Divider, TextField, Typography} from "@mui/material";
 import {useState} from "react";
 import {inputValidation} from "./utils/validation";
-import {BsArrowRight} from "react-icons/bs";
 import {getQuiz} from "../../api/index.ts";
 
 //TODO
 //ability edit and make own flashcards
 //organize styles
 //validation
-//minimum string length is 300
 //utilize better prompt
 
 //add error message
@@ -20,11 +18,15 @@ type pageChangeFunction = (direction: string) => void;
  *
  * @brief A functional UI component that allows user to submit text through a link or copy and paste their notes
  *
+ * @param {object} props the props object
  * @param {function} handlePageChange this parameter allows the parent component to access the child's onClick event listener
  * @param {pageChangeFunction} setTextInput this parameter sets the text input to the user's input
  * @returns {JSX.Element} this function returns 2 different input fields
  */
-export default function InputNotes(props: {handlePageChange: pageChangeFunction, setResponse: React.Dispatch<React.SetStateAction<never[]>>}) {
+export default function InputNotes(props: {
+    handlePageChange: pageChangeFunction,
+    setResponse: React.Dispatch<React.SetStateAction<never[]>>
+}) {
 
     //defaultValue for the textField component
     const initialString = "Example: Einstein was born on March 14, 1879, in Ulm, Germany, a town that today has " +
@@ -55,16 +57,16 @@ export default function InputNotes(props: {handlePageChange: pageChangeFunction,
      * @see setError sets error as true or false
      * @see setRecordedInput sets text input to user input
      */
-    function handleCharacterCount(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    function handleCharacterCount(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void {
         const typedCharacters = e.target.value.length;
         const charactersUsed = `${typedCharacters} / ${characterLimit}`;
         setCharacterCount(charactersUsed);
         //if RegExp test returns true
-        if (inputValidation(typedCharacters) === true) {
+        if (inputValidation(typedCharacters)) {
             setError(false)
             setTextInput(e.target.value);
             //if RegExp test returns false
-        } else if (inputValidation(typedCharacters) === false) {
+        } else if (!inputValidation(typedCharacters)) {
             setError(true)
         }
     }
@@ -100,31 +102,11 @@ export default function InputNotes(props: {handlePageChange: pageChangeFunction,
 
     return (
         <div style={{width: '30vw', textAlign: 'center'}}>
-            <Typography variant="h3" color="text.primary" sx={{width: '100%'}}>
-                Enter a URL or your Notes and Notekit will generate a quiz automatically from them
+            <Typography variant="h3" color="text.primary" sx={{width: '100%', fontWeight: 550}}>
+                Notekit will generate a quiz from your notes
             </Typography>
-            <div style={{padding: '20px'}}>
-                <TextField
-                    fullWidth
-                    placeholder={"ex. https://en.wikipedia.org/wiki/Ship"}
-                    variant={"standard"}
-                    InputProps={{
-                        endAdornment: (
-                            <InputAdornment position="end">
-                                <IconButton sx={{
-                                    fontSize: '15px',
-                                    padding: '5px',
-                                    '&:hover': {backgroundColor: '#253859', color: 'aqua'}
-                                }}>
-                                    <BsArrowRight/>
-                                </IconButton>
-                            </InputAdornment>
-                        )
-                    }}
-                />
-            </div>
             <Divider orientation={"horizontal"}
-                     sx={{width: '100%', fontSize: '20px', padding: '20px 0px 45px 0px'}}>or</Divider>
+                     sx={{width: '100%', fontSize: '20px', margin: '40px 0px 40px 0px'}}/>
             <TextField
                 aria-label={"Enter Text Here"}
                 fullWidth
@@ -154,7 +136,7 @@ export default function InputNotes(props: {handlePageChange: pageChangeFunction,
                         '&:hover': {backgroundColor: 'black', color: 'aqua'},
 
                     }}>
-                <Typography>Generate</Typography>
+                <Typography variant={"h6"} sx={{fontSize: '15px'}}>Generate</Typography>
             </Button>
         </div>
     )
