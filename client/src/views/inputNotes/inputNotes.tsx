@@ -1,30 +1,31 @@
-import {Button, Divider, IconButton, InputAdornment, TextField, Typography} from "@mui/material";
+import {Button, Divider, TextField, Typography} from "@mui/material";
 import {useState} from "react";
 import {inputValidation} from "./utils/validation";
-import {BsArrowRight} from "react-icons/bs";
-import {Configuration, OpenAIApi} from "openai";
+import {getQuiz} from "../../api";
 
 //TODO
 //ability edit and make own flashcards
 //organize styles
 //validation
-//minimum string length is 300
 //utilize better prompt
 
 //add error message
 //aria text label
 //best colors
-
+type pageChangeFunction = (direction: string) => void;
 /**
  * @constructor
  *
  * @brief A functional UI component that allows user to submit text through a link or copy and paste their notes
  *
- * @param {function} handlePageChange this parameter allows the parent component to access the child's onClick event listener
- * @param {setState} setTextInput this parameter sets the text input to the user's input
- * @returns {JSX.Element} this function returns 2 different input fields
+ * @param {object} props the props object. Has properties handlePageChange {function} this parameter allows the parent component to access the child's onClick event listener and {setResponse} this parameter sets the text input to the user's input
+ *
+ * @returns {React.FC} this function returns 2 different input fields
  */
-export default function InputNotes({handlePageChange, setResponse}) {
+export default function InputNotes(props: {
+    handlePageChange: pageChangeFunction,
+    setResponse: React.Dispatch<React.SetStateAction<string[][]>>
+}) {
 
     //defaultValue for the textField component
     const initialString = "Example: Einstein was born on March 14, 1879, in Ulm, Germany, a town that today has " +
@@ -43,15 +44,9 @@ export default function InputNotes({handlePageChange, setResponse}) {
     //define state management for managing error state
     const [error, setError] = useState(false);
     //define state management for displaying error messages
-    const [errorMessage, setErrorMessage] = useState("");
+    //const [errorMessage, setErrorMessage] = useState("");
     //define state management for managing the user input
     const [textInput, setTextInput] = useState(initialString)
-
-    //chatGPT initialization
-    const API_KEY = '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'
-    const openai = new OpenAIApi(new Configuration({
-        apiKey: API_KEY
-    }))
 
     /**
      * @brief An event handler that displays the number of characters already used and validates the input
@@ -61,16 +56,16 @@ export default function InputNotes({handlePageChange, setResponse}) {
      * @see setError sets error as true or false
      * @see setRecordedInput sets text input to user input
      */
-    function handleCharacterCount(e) {
+    function handleCharacterCount(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void {
         const typedCharacters = e.target.value.length;
         const charactersUsed = `${typedCharacters} / ${characterLimit}`;
         setCharacterCount(charactersUsed);
         //if RegExp test returns true
-        if (inputValidation({typedCharacters}) === true) {
+        if (inputValidation(typedCharacters)) {
             setError(false)
             setTextInput(e.target.value);
             //if RegExp test returns false
-        } else if (inputValidation({typedCharacters}) === false) {
+        } else if (!inputValidation(typedCharacters)) {
             setError(true)
         }
     }
@@ -81,54 +76,21 @@ export default function InputNotes({handlePageChange, setResponse}) {
      * @see setResponse sets the response to be utilized by other components
      */
     const submitPrompt = async () => {
-        openai.createChatCompletion({
-            model: "gpt-3.5-turbo",
-            messages: [{
-                role: "user",
-                content: `Can you generate a list of questions and answers using the following input text?: ${textInput}
-                 ,start each question with "Q" and each answer with "A"`
-            }]
-        }).then(res => {
-            //convert the string response into a nested array
-            const response = res.data.choices[0].message.content
-            const arrResponse = response.split('\n\n')
-
-            const nestedArray = []
-            arrResponse.map(res => {
-                nestedArray.push(res.split('\n'))
-            })
-            setResponse(nestedArray)
-        })
+        const response = await getQuiz({prompt: textInput});
+        console.log(response);
+        const questionsAndAnswers: Object = response.data;
+        const nestedArray: string[][] = Object.values(questionsAndAnswers);
+        props.setResponse(nestedArray);
     }
 
 
     return (
         <div style={{width: '30vw', textAlign: 'center'}}>
-            <Typography variant="h3" color="text.primary" sx={{width: '100%'}}>
-                Enter a URL or your Notes and Notekit will generate a quiz automatically from them
+            <Typography variant="h3" color="text.primary" sx={{width: '100%', fontWeight: 550}}>
+                Notekit will generate a quiz from your notes
             </Typography>
-            <div style={{padding: '20px'}}>
-                <TextField
-                    fullWidth
-                    placeholder={"ex. https://en.wikipedia.org/wiki/Ship"}
-                    variant={"standard"}
-                    InputProps={{
-                        endAdornment: (
-                            <InputAdornment position="end">
-                                <IconButton sx={{
-                                    fontSize: '15px',
-                                    padding: '5px',
-                                    '&:hover': {backgroundColor: '#253859', color: 'aqua'}
-                                }}>
-                                    <BsArrowRight/>
-                                </IconButton>
-                            </InputAdornment>
-                        )
-                    }}
-                />
-            </div>
             <Divider orientation={"horizontal"}
-                     sx={{width: '100%', fontSize: '20px', padding: '20px 0px 45px 0px'}}>or</Divider>
+                     sx={{width: '100%', fontSize: '20px', margin: '40px 0px 40px 0px'}}/>
             <TextField
                 aria-label={"Enter Text Here"}
                 fullWidth
@@ -145,7 +107,7 @@ export default function InputNotes({handlePageChange, setResponse}) {
             ></TextField>
             <Button disabled={error}
                     onClick={() => {
-                        handlePageChange('forward');
+                        props.handlePageChange('forward');
                         submitPrompt();
                     }}
                     sx={{
@@ -158,7 +120,7 @@ export default function InputNotes({handlePageChange, setResponse}) {
                         '&:hover': {backgroundColor: 'black', color: 'aqua'},
 
                     }}>
-                <Typography>Generate</Typography>
+                <Typography variant={"h6"} sx={{fontSize: '15px'}}>Generate</Typography>
             </Button>
         </div>
     )

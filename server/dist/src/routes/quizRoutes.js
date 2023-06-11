@@ -6,5 +6,5 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const quizController_1 = require("../controllers/quizController");
 const router = express_1.default.Router();
-router.post('/', quizController_1.getQuiz);
+router.post('/quiz', quizController_1.getQuiz);
 exports.default = router;

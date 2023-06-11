@@ -1,7 +1,7 @@
 import {Card, CardContent, Divider, IconButton,  Typography} from "@mui/material";
 import {IoCopyOutline, IoPencilOutline, IoTrashOutline} from "react-icons/io5";
 import {IoIosArrowBack} from "react-icons/io";
-
+type pageChangeFunction = (direction: string) => void;
 /**
  * @brief A functional UI component that displays the quiz name and all the flashcards
  *
@@ -10,12 +10,12 @@ import {IoIosArrowBack} from "react-icons/io";
  * @returns {JSX.Element} the title and an array of flashcards
  * @constructor
  */
-export default function FlashCards({handlePageChange, response}) {
+export default function FlashCards(props: {handlePageChange: pageChangeFunction, response: string[][]}) {
     return (
         <CardContent sx={{height: '100vh', padding: '10%'}}>
             <div style={{display: 'flex', flexDirection: 'row'}}>
                 <div style={{display: 'flex', alignItems: 'center'}}>
-                    <IconButton onClick={() => handlePageChange("backward")}>
+                    <IconButton onClick={() => props.handlePageChange("backward")}>
                         <IoIosArrowBack size={35}/>
                     </IconButton>
                 </div>
@@ -23,8 +23,8 @@ export default function FlashCards({handlePageChange, response}) {
                     Quiz
                 </Typography>
             </div>
-            {response.map((data, index) => {
-                    return (<FlashCard data={data}/>)
+            {props.response.map((data) => {
+                return (<FlashCard data={data}/>)
             })}
         </CardContent>
     )
@@ -38,7 +38,7 @@ export default function FlashCards({handlePageChange, response}) {
  * @param {array} data parameter has an array containing the question and answer to flashcard
  * @returns {JSX.Element} the question and answer to the flashcard as well as buttons to interact with the flashcard
  */
-function FlashCard({data}) {
+function FlashCard(props: {data: Array<string>}){
     return (
         <CardContent sx={{width: '30vw', display: 'flex', flexFlow: 'row nowrap'}}>
             <Card sx={{
@@ -48,12 +48,12 @@ function FlashCard({data}) {
             }}>
                 <div style={{display: 'flex', flexDirection: 'row'}}>
                     <Typography variant={"h6"} color={"text.primary"} sx={{fontWeight: '600'}}>
-                        {data[0]}
+                        {props.data[0]}
                     </Typography>
                 </div>
                 <Divider sx={{margin: '10px 0px 10px 0px'}} light/>
                 <Typography variant={"h6"} color={"text.secondary"}>
-                    {data[1]}
+                    {props.data[1]}
                 </Typography>
             </Card>
             <div style={{

@@ -4,7 +4,6 @@
 /node_modules
 /client/node_modules
 /server/node_modules
-/clientvite/notekit/node_modules
 /.pnp
 .pnp.js
 

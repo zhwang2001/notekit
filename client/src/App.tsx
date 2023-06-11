@@ -3,6 +3,7 @@ import {useState} from 'react'
 import InputNotes from "./views/inputNotes/inputNotes";
 import FlashCards from "./views/flashCards/flashCards"
 import {LinearProgress} from "@mui/material";
+import backgroundImage from './assets/background_image.jpg'
 
 function App() {
     //define state management for which page is being shown
@@ -12,16 +13,14 @@ function App() {
      *
      * @see setPageIndex sets the index to the current index + 1
      */
-    const handlePageChange = (direction) => {
-        if (direction === "forward") {
+    const handlePageChange = (direction: string): void => {
+        if (direction === "forward")
             setPageIndex(pageIndex + 1)
-        } else if (direction === "backward") {
+        else if (direction === "backward")
             setPageIndex(pageIndex - 1)
-        }
     }
-
     //define state management for storing gpt response
-    const [response, setResponse] = useState([])
+    const [response, setResponse] = useState<string[][]>([]);
     //array that stores the different pages viewed by user
     const pages = [
         <InputNotes handlePageChange={handlePageChange} setResponse={setResponse}/>,
@@ -39,8 +38,9 @@ function App() {
             justifyContent: 'center',
             alignItems: 'center',
             flexFlow: 'column nowrap',
-            backgroundImage: 'url("https://img.freepik.com/free-vector/winter-blue-pink-gradient-background-vector_53876-117276.jpg?w=1800&t=st=1686457391~exp=1686457991~hmac=9713980c47b11619b1f3582574b0bcc57f8571209cc1a3a32c4f52a8786abc10")',
-            backgroundSize: '100% auto',
+            backgroundImage: `url(${backgroundImage})`,
+            backgroundSize: 'cover',
+            backgroundRepeat: 'no-repeat',
             overflowY: 'scroll',
         }}>
             {pages[pageIndex]}
