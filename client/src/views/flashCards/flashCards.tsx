@@ -1,3 +1,4 @@
+import React, {JSX} from 'react';
 import {Card, CardContent, Divider, IconButton, Typography} from "@mui/material";
 import {IoCopyOutline, IoPencilOutline, IoTrashOutline} from "react-icons/io5";
 import {IoIosArrowBack} from "react-icons/io";
@@ -5,16 +6,15 @@ import {IoIosArrowBack} from "react-icons/io";
 interface FlashCardsProps {
     handlePageChange: (direction: string) => void;
     response: string[][];
-    setResponse: React.Dispatch<React.SetStateAction<any>>;
+    setResponse: React.Dispatch<React.SetStateAction<string[][] | []>>;
 }
-
 /**
  * @brief A functional UI component that displays the quiz name and all the flashcards.
  *
  * @param {FlashCardsProps} props - The component props.
  * @returns {JSX.Element} The title and an array of flashcards.
  */
-const FlashCards: React.FC<FlashCardsProps> = (props) => {
+const FlashCards: React.FC<FlashCardsProps> = (props: FlashCardsProps): React.ReactElement => {
     const {response, handlePageChange, setResponse} = props;
 
     return (
@@ -32,25 +32,24 @@ const FlashCards: React.FC<FlashCardsProps> = (props) => {
                     Quiz
                 </Typography>
             </div>
-            {response.map((data, index) => (
+            {response.map((data: string[], index: number) => (
                 <FlashCard key={index} data={data}/>
             ))}
         </CardContent>
     );
 };
 
-export default FlashCards
 
+export default FlashCards
 /**
  * @constructor
  *
  * @brief A functional UI component that returns an individual flashcard
  *
  * @param {object} props the props object
- * @param {array} data parameter has an array containing the question and answer to flashcard
  * @returns {JSX.Element} the question and answer to the flashcard as well as buttons to interact with the flashcard
  */
-function FlashCard(props: { data: Array<string> }) {
+function FlashCard (props: { data: Array<string> }) :JSX.Element {
     return (
         <CardContent sx={{width: '30vw', display: 'flex', flexFlow: 'row nowrap'}}>
             <Card sx={{
