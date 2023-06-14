@@ -4,6 +4,7 @@ import {useState} from "react";
 import {inputValidation} from "./utils/validation";
 import {getQuiz} from "../../api";
 import UploadPdf from './UploadNotes.tsx'
+import {AxiosResponse} from "axios";
 
 //TODO
 //ability edit and make own flashcards
@@ -80,16 +81,12 @@ export default function InputNotes(props: {
      *
      * @see setResponse sets the response to be utilized by other components
      */
-    const submitPrompt = async ():Promise<void> => {
-        try{
-            const response= await getQuiz({prompt: textInput});
+    const submitPrompt = async (textInput: string):Promise<void> => {
+            const response = await getQuiz({prompt: textInput});
             console.log(response);
             const questionsAndAnswers: object = response.data;
             const nestedArray: string[][] = Object.values(questionsAndAnswers);
             props.setResponse(nestedArray);
-        } catch (error) {
-            console.log("An error occurred", error)
-        }
     }
 
     return (
@@ -97,7 +94,10 @@ export default function InputNotes(props: {
             <Typography variant="h4" color="text.primary" sx={{width: '100%', fontWeight: 550}}>
                 Notekit will generate a quiz from your uploaded PDF or notes
             </Typography>
-            <UploadPdf/>
+            <UploadPdf
+                handlePageChange={props.handlePageChange}
+                submitPrompt={submitPrompt}
+            />
             <Divider orientation={"horizontal"}
                      sx={{width: '100%', fontSize: '20px', margin: '40px 0px 40px 0px'}}
             >or
@@ -119,7 +119,9 @@ export default function InputNotes(props: {
             <Button disabled={error}
                     onClick={() => {
                         props.handlePageChange('forward');
-                        submitPrompt().catch(error => console.log('An error has occurred: ', error))
+                        submitPrompt(textInput)
+                            .then(() => console.log('Successfully created quiz!'))
+                            .catch(error => console.log('An error has occurred: ', error))
                     }}
                     sx={{
                         float: 'right',
