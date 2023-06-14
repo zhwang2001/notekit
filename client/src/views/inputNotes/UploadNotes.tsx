@@ -22,7 +22,10 @@ type submitPromptFunction = (textInput: string) => Promise<void>
  * @param {Function} submitPrompt parameter contains the logic to submit prompt to gpt
  * @returns {JSX.Element} an upload button that only allows pdfs to be uploaded
  */
-export default function UploadPdf(props: {handlePageChange: pageChangeFunction, submitPrompt: submitPromptFunction}): JSX.Element {
+export default function UploadPdf(props: {
+    handlePageChange: pageChangeFunction,
+    submitPrompt: submitPromptFunction
+}): JSX.Element {
 
     //define state management for managing helper text message
     const [helperMsg, setHelperMsg] = useState<string>('')
