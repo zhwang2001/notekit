@@ -7,21 +7,22 @@ import {FiUpload} from 'react-icons/fi'
 import Box from '@mui/material/Box'
 import Slider from '@mui/material/Slider'
 import {RxTriangleRight} from 'react-icons/rx'
+import {DocumentInitParameters, TypedArray} from "pdfjs-dist/types/src/display/api";
 
 type pageChangeFunction = (direction: string) => void
 type submitPromptFunction = (textInput: string) => Promise<void>
+
+
 /**
  * @constructor
  *
  * @brief A functional UI component that allows the user to upload pdfs for processing
  *
- * @param {object} props the props object
+ * @param {Function} handlePageChange parameter contains the logic to change pages
+ * @param {Function} submitPrompt parameter contains the logic to submit prompt to gpt
  * @returns {JSX.Element} an upload button that only allows pdfs to be uploaded
  */
-export default function UploadPdf(props: {
-    handlePageChange: pageChangeFunction,
-    submitPrompt: submitPromptFunction
-}): JSX.Element {
+export default function UploadPdf(props: {handlePageChange: pageChangeFunction, submitPrompt: submitPromptFunction}): JSX.Element {
 
     //define state management for managing helper text message
     const [helperMsg, setHelperMsg] = useState<string>('')
@@ -49,7 +50,8 @@ export default function UploadPdf(props: {
      * @param {Event} event parameter contains the event object
      * @param {[firstPage, finalPage]} newValue parameter contains the selected pages
      */
-    const handleChange = (event: Event, newValue: [firstPage, finalPage]): void => {
+    const handleChange = (event: Event, newValue: number | number[]): void => {
+        event.type;
         setPageRange(newValue as [firstPage, finalPage]);
     };
 
@@ -67,7 +69,7 @@ export default function UploadPdf(props: {
      * @see setPageRange
      * @see setShowSlider
      */
-    const processDocument = async (dataUrl: string): Promise<void> => {
+    const processDocument = async (dataUrl: string | ArrayBuffer | URL | TypedArray | DocumentInitParameters): Promise<void> => {
         //initialize pdf.js
         pdfjslib.GlobalWorkerOptions.workerSrc = '../../../node_modules/pdfjs-dist/build/pdf.worker.js'
         //await processed document data
@@ -137,22 +139,20 @@ export default function UploadPdf(props: {
                                 '&:hover': {backgroundColor: 'black', color: 'aqua'},
                             }}
                             onClick={handleFileUpload}>
-                            <div style={{display: 'flex', alignItems: 'center', paddingTop: '5px'}}>
-                                <Typography
-                                    variant={"h6"}
-                                    color={"text.primary"}
-                                    sx={{
-                                        fontSize: '20px',
-                                        color: 'aqua',
-                                        display: 'flex',
-                                        flexDirection: 'row',
-                                        alignItems: 'center',
-                                        padding: '0px 10px 0px 10px'
-                                    }}>
-                                    Upload PDF Here
-                                </Typography>
-                                <FiUpload size={20} style={{paddingBottom: '6px'}}/>
-                            </div>
+                            <Typography
+                                variant={"h6"}
+                                color={"text.primary"}
+                                sx={{
+                                    fontSize: '20px',
+                                    color: 'aqua',
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    padding: '0px 10px 0px 10px'
+                                }}>
+                                <FiUpload style={{paddingRight: '10px'}}/>
+                                Upload PDF Here
+                            </Typography>
                         </Button>
                         {helperMsg}
                     </FormHelperText>
@@ -197,7 +197,7 @@ type finalPage = number
  * @param {Function} submitPrompt parameter contains the logic to submit prompt to gpt
  * @returns {TextContent[] | undefined} an array containing the data within each page
  */
-const pdfToText = (doc: PDFDocumentProxy, pageRange: [firstPage, finalPage], submitPrompt: submitPromptFunction): void => {
+const pdfToText = (doc: PDFDocumentProxy, pageRange: [firstPage, finalPage], submitPrompt: Function): void => {
 
     interface contentObject {
         items: pageInfoObject[]
@@ -222,16 +222,16 @@ const pdfToText = (doc: PDFDocumentProxy, pageRange: [firstPage, finalPage], sub
      */
     async function getPages(doc: PDFDocumentProxy, pageRange: [firstPage, finalPage]): Promise<contentObject[] | undefined> {
         try {
-            const firstPage = pageRange[0]
-            const totalPages = pageRange[1]
+            const firstPage = pageRange[0];
+            const totalPages = pageRange[1];
             //store the data collected from pdf
-            const allContent: contentObject[] = []
+            const allContent: contentObject[] = [];
             //iterate through the pages of the pdf retrieving content of the page
             for (let pageNumber = firstPage; pageNumber <= totalPages; pageNumber++) {
-                const page: PDFPageProxy = await doc.getPage(pageNumber)
-                const content: TextContent = await page.getTextContent()
+                const page: PDFPageProxy = await doc.getPage(pageNumber);
+                const content: TextContent = await page.getTextContent();
                 console.log('Page', pageNumber, 'Content:', content);
-                allContent.push(content)
+                allContent.push(content);
             }
             console.log(allContent)
             return allContent
@@ -248,7 +248,7 @@ const pdfToText = (doc: PDFDocumentProxy, pageRange: [firstPage, finalPage], sub
      * @param {Function} submitPrompt parameter that contains the logic ne
      * @returns {Promise<void>} a promise containing the properties of each line
      */
-    async function getLines(doc: PDFDocumentProxy, pageRange: [firstPage, finalPage], submitPrompt: submitPromptFunction): Promise<Promise<void>[]> {
+    async function getLines(doc: PDFDocumentProxy, pageRange: [firstPage, finalPage], submitPrompt: Function): Promise<Promise<void>[]> {
         const content: contentObject[] | undefined = await getPages(doc, pageRange)
 
         if (!content) {
