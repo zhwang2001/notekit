@@ -7,6 +7,7 @@ import {FiUpload} from 'react-icons/fi'
 import Box from '@mui/material/Box'
 import Slider from '@mui/material/Slider'
 import {RxTriangleRight} from 'react-icons/rx'
+import {DocumentInitParameters, TypedArray} from "pdfjs-dist/types/src/display/api";
 
 type pageChangeFunction = (direction: string) => void
 type submitPromptFunction = (textInput: string) => Promise<void>
@@ -21,7 +22,7 @@ type submitPromptFunction = (textInput: string) => Promise<void>
  * @param {Function} submitPrompt parameter contains the logic to submit prompt to gpt
  * @returns {JSX.Element} an upload button that only allows pdfs to be uploaded
  */
-export default function UploadPdf(handlePageChange: pageChangeFunction, submitPrompt: submitPromptFunction): JSX.Element {
+export default function UploadPdf(props: {handlePageChange: pageChangeFunction, submitPrompt: submitPromptFunction}): JSX.Element {
 
     //define state management for managing helper text message
     const [helperMsg, setHelperMsg] = useState<string>('')
@@ -49,7 +50,8 @@ export default function UploadPdf(handlePageChange: pageChangeFunction, submitPr
      * @param {Event} event parameter contains the event object
      * @param {[firstPage, finalPage]} newValue parameter contains the selected pages
      */
-    const handleChange = (event: Event, newValue: [firstPage, finalPage]): void => {
+    const handleChange = (event: Event, newValue: number | number[]): void => {
+        event.type;
         setPageRange(newValue as [firstPage, finalPage]);
     };
 
@@ -67,7 +69,7 @@ export default function UploadPdf(handlePageChange: pageChangeFunction, submitPr
      * @see setPageRange
      * @see setShowSlider
      */
-    const processDocument = async (dataUrl: string): Promise<void> => {
+    const processDocument = async (dataUrl: string | ArrayBuffer | URL | TypedArray | DocumentInitParameters): Promise<void> => {
         //initialize pdf.js
         pdfjslib.GlobalWorkerOptions.workerSrc = '../../../node_modules/pdfjs-dist/build/pdf.worker.js'
         //await processed document data
@@ -158,8 +160,8 @@ export default function UploadPdf(handlePageChange: pageChangeFunction, submitPr
                         ? <Tooltip title={"Submit the PDF"} placement={'right'} arrow>
                             {/*convert pdf to text*/}
                             <IconButton onClick={() => {
-                                pdfToText(doc, pageRange, submitPrompt);
-                                handlePageChange('forward')
+                                pdfToText(doc, pageRange, props.submitPrompt);
+                                props.handlePageChange('forward')
                             }} sx={{padding: '2px', margin: '10px'}}>
                                 <RxTriangleRight size={35} style={{color: '#253859'}}/>
                             </IconButton>
@@ -220,16 +222,16 @@ const pdfToText = (doc: PDFDocumentProxy, pageRange: [firstPage, finalPage], sub
      */
     async function getPages(doc: PDFDocumentProxy, pageRange: [firstPage, finalPage]): Promise<contentObject[] | undefined> {
         try {
-            const firstPage = pageRange[0]
-            const totalPages = pageRange[1]
+            const firstPage = pageRange[0];
+            const totalPages = pageRange[1];
             //store the data collected from pdf
-            const allContent: contentObject[] = []
+            const allContent: contentObject[] = [];
             //iterate through the pages of the pdf retrieving content of the page
             for (let pageNumber = firstPage; pageNumber <= totalPages; pageNumber++) {
-                const page: PDFPageProxy = await doc.getPage(pageNumber)
-                const content: TextContent = await page.getTextContent()
+                const page: PDFPageProxy = await doc.getPage(pageNumber);
+                const content: TextContent = await page.getTextContent();
                 console.log('Page', pageNumber, 'Content:', content);
-                allContent.push(content)
+                allContent.push(content);
             }
             console.log(allContent)
             return allContent
