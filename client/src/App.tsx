@@ -32,7 +32,7 @@ function App(): JSX.Element {
     return (
         <div style={{
             width: '700px',
-            height: '500px',
+            height: '600px',
             padding: '5% 0% 5% 0%',
             borderRadius: '20px',
             display: 'flex',
