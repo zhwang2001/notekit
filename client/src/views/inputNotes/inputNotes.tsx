@@ -1,13 +1,9 @@
+import React from 'react'
 import {Button, Divider, TextField, Typography} from "@mui/material";
-import {useRef, useState} from "react";
+import {useState} from "react";
 import {inputValidation} from "./utils/validation";
 import {getQuiz} from "../../api";
-import React, {JSX} from 'react'
-import * as pdfjslib from 'pdfjs-dist'
-import {TextContent} from "pdfjs-dist/types/web/text_layer_builder";
-import {TextItem, TextMarkedContent} from "pdfjs-dist/types/src/display/api";
-import {FiUpload} from 'react-icons/fi'
-import {PDFDocumentProxy, PDFPageProxy} from "pdfjs-dist";
+import UploadPdf from './UploadNotes.tsx'
 
 //TODO
 //ability edit and make own flashcards
@@ -101,7 +97,6 @@ export default function InputNotes(props: {
             <Typography variant="h4" color="text.primary" sx={{width: '100%', fontWeight: 550}}>
                 Notekit will generate a quiz from your uploaded PDF or notes
             </Typography>
-            <script src="//mozilla.github.io/pdf.js/build/pdf.js"></script>
             <UploadPdf/>
             <Divider orientation={"horizontal"}
                      sx={{width: '100%', fontSize: '20px', margin: '40px 0px 40px 0px'}}
@@ -139,144 +134,5 @@ export default function InputNotes(props: {
             </Button>
         </div>
     )
-}
-
-/**
- *
- * @constructor
- *
- * @brief A functional UI component that allows the user to upload pdfs for processing
- *
- * @returns {JSX.Element} an upload button that only allows pdfs to be uploaded
- */
-function UploadPdf(): JSX.Element {
-
-    /**
-     * @brief event handler for processing the uploaded pdf file
-     * @param {any} e event parameter
-     */
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement | null>): void => {
-        const file: File | undefined = e.target.files?.[0];
-        if (file){
-            if (file.type === "application/pdf"){
-                console.log('Uploaded file', file);
-            //initialize fileReader to convert PDF file to data URL
-            const reader = new FileReader();
-            reader.onload = () => {
-                const dataUrl = reader.result;
-                console.log('Data URL:', dataUrl);
-                //convert pdf to text
-                pdfToText(dataUrl);
-                // Perform further processing with the data URL
-            };
-            reader.readAsDataURL(file);
-
-        } else{
-            console.log('Invalid File Type. Only PDF files are allowed')
-        }
-
-        }
-    }
-
-
-    const fileInputRef = useRef<HTMLInputElement | null>(null);
-    /**
-     * @brief function to access underlying functionality of input
-     */
-    const handleFileUpload = (): void => {
-        fileInputRef.current?.click()
-    }
-    return(
-        <>
-            <input
-                type={"file"}
-                accept={".pdf"}
-                style={{ display: 'none' }}
-                ref={fileInputRef}
-                onChange={handleFileChange}
-            />
-            <Button
-                sx={{
-                    "&.Mui-disabled": {backgroundColor: 'lightGrey', color: 'white'},
-                    backgroundColor: '#253859',
-                    padding: '10px',
-                    marginTop: '20px',
-                    '&:hover': {backgroundColor: 'black', color: 'aqua'},
-                }}
-                onClick={handleFileUpload}
-            >
-                <Typography variant={"h6"}
-                            color={"text.primary"}
-                            sx={{fontSize: '20px', color: 'white', display: 'flex', flexDirection: 'row', alignItems: 'center', padding: '0px 10px 0px 10px'}}
-                >
-                    <FiUpload style={{paddingRight: '10px'}} />
-                    Upload PDF Here
-                </Typography>
-            </Button>
-        </>
-    )
-}
-
-const pdfToText = (dataUrl: string): void => {
-    pdfjslib.GlobalWorkerOptions.workerSrc = '../../../node_modules/pdfjs-dist/build/pdf.worker.js'
-
-    async function getContent(src: string): Promise<TextContent[] | undefined> {
-        try{
-            const doc: PDFDocumentProxy = await pdfjslib.getDocument(src).promise
-            const numPages: number = doc.numPages;
-
-            const allContent = []
-            for (let pageNumber = 1; pageNumber <= numPages; pageNumber++){
-                const page: PDFPageProxy = await doc.getPage(pageNumber)
-                const content = await page.getTextContent()
-                console.log('Page', pageNumber, 'Content:', content);
-                allContent.push(content)
-            }
-            console.log(allContent)
-            return allContent
-        } catch (error) {
-            console.log('an error occurred', error)
-        }
-    }
-
-    async function getItems(src:string): Promise<void[]>{
-        interface pageInfoObject {
-            dir: string,
-            fontName: string,
-            hasE0L: boolean,
-            height: number,
-            str: string,
-            transform: number[],
-            width: number,
-        }
-        interface contentObject {
-            items: [pageInfoObject],
-            styles: object
-        }
-        const content: TextContent[] | undefined = await getContent(src)
-
-        if (!content){
-            return [];
-        }
-        //map out the pages
-        return content.map(async (pageInfo: contentObject, index: number): Promise<void> => {
-            console.log(`\n\n\n-----------------------------Page ${index + 1}--------------------------------\n\n\n`)
-            try {
-                await Promise.all(
-                    //map out the lines
-                    pageInfo.items.map((lineInfo: pageInfoObject): Promise<void> => {
-                        console.log(lineInfo.str);
-                        return Promise.resolve();
-                }))
-            } catch (error) {
-                console.log('An error occurred: ', error)
-                return Promise.reject(error);
-            }
-        })
-    }
-    getItems(dataUrl)
-        .then((response: void[]) => console.log(response))
-        .catch((error: unknown) => console.log(error))
-
 }
 
