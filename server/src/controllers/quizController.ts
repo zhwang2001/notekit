@@ -33,10 +33,11 @@ export const getQuiz = async (req: Request, res: Response) => {
     const query: String = request.prompt;
     const content = await openai.createChatCompletion({
         model: "gpt-3.5-turbo",
+        temperature: 0.6,
         messages: [{
             role: "user",
-            content: `Can you generate a list of very high quality questions and answers using the following input text?: ${query}. The expected output should be in JSON format with example format being {Placeholder Question 1: Answer 1, Placeholder Question 2: Answer 2, ...}`
-        }]
+            content: `Can you generate a list of very high quality questions and answers using the following input text?: ${query}. The expected output should be in JSON format with example format being {Placeholder Question 1: Answer 1, Placeholder Question 2: Answer 2, ...}`,
+        }],
     })
     //convert the string response into a nested array
     const response: string = content.data!.choices[0].message!.content;

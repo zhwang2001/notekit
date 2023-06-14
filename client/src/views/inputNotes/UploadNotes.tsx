@@ -10,18 +10,18 @@ import {RxTriangleRight} from 'react-icons/rx'
 
 type pageChangeFunction = (direction: string) => void
 type submitPromptFunction = (textInput: string) => Promise<void>
-
-
 /**
  * @constructor
  *
  * @brief A functional UI component that allows the user to upload pdfs for processing
  *
- * @param {Function} handlePageChange parameter contains the logic to change pages
- * @param {Function} submitPrompt parameter contains the logic to submit prompt to gpt
+ * @param {object} props the props object
  * @returns {JSX.Element} an upload button that only allows pdfs to be uploaded
  */
-export default function UploadPdf(handlePageChange: pageChangeFunction, submitPrompt: submitPromptFunction): JSX.Element {
+export default function UploadPdf(props: {
+    handlePageChange: pageChangeFunction,
+    submitPrompt: submitPromptFunction
+}): JSX.Element {
 
     //define state management for managing helper text message
     const [helperMsg, setHelperMsg] = useState<string>('')
@@ -137,20 +137,22 @@ export default function UploadPdf(handlePageChange: pageChangeFunction, submitPr
                                 '&:hover': {backgroundColor: 'black', color: 'aqua'},
                             }}
                             onClick={handleFileUpload}>
-                            <Typography
-                                variant={"h6"}
-                                color={"text.primary"}
-                                sx={{
-                                    fontSize: '20px',
-                                    color: 'aqua',
-                                    display: 'flex',
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
-                                    padding: '0px 10px 0px 10px'
-                                }}>
-                                <FiUpload style={{paddingRight: '10px'}}/>
-                                Upload PDF Here
-                            </Typography>
+                            <div style={{display: 'flex', alignItems: 'center', paddingTop: '5px'}}>
+                                <Typography
+                                    variant={"h6"}
+                                    color={"text.primary"}
+                                    sx={{
+                                        fontSize: '20px',
+                                        color: 'aqua',
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                        padding: '0px 10px 0px 10px'
+                                    }}>
+                                    Upload PDF Here
+                                </Typography>
+                                <FiUpload size={20} style={{paddingBottom: '6px'}}/>
+                            </div>
                         </Button>
                         {helperMsg}
                     </FormHelperText>
@@ -158,8 +160,8 @@ export default function UploadPdf(handlePageChange: pageChangeFunction, submitPr
                         ? <Tooltip title={"Submit the PDF"} placement={'right'} arrow>
                             {/*convert pdf to text*/}
                             <IconButton onClick={() => {
-                                pdfToText(doc, pageRange, submitPrompt);
-                                handlePageChange('forward')
+                                pdfToText(doc, pageRange, props.submitPrompt);
+                                props.handlePageChange('forward')
                             }} sx={{padding: '2px', margin: '10px'}}>
                                 <RxTriangleRight size={35} style={{color: '#253859'}}/>
                             </IconButton>
@@ -195,7 +197,7 @@ type finalPage = number
  * @param {Function} submitPrompt parameter contains the logic to submit prompt to gpt
  * @returns {TextContent[] | undefined} an array containing the data within each page
  */
-const pdfToText = (doc: PDFDocumentProxy, pageRange: [firstPage, finalPage], submitPrompt: Function): void => {
+const pdfToText = (doc: PDFDocumentProxy, pageRange: [firstPage, finalPage], submitPrompt: submitPromptFunction): void => {
 
     interface contentObject {
         items: pageInfoObject[]
@@ -246,7 +248,7 @@ const pdfToText = (doc: PDFDocumentProxy, pageRange: [firstPage, finalPage], sub
      * @param {Function} submitPrompt parameter that contains the logic ne
      * @returns {Promise<void>} a promise containing the properties of each line
      */
-    async function getLines(doc: PDFDocumentProxy, pageRange: [firstPage, finalPage], submitPrompt: Function): Promise<Promise<void>[]> {
+    async function getLines(doc: PDFDocumentProxy, pageRange: [firstPage, finalPage], submitPrompt: submitPromptFunction): Promise<Promise<void>[]> {
         const content: contentObject[] | undefined = await getPages(doc, pageRange)
 
         if (!content) {
