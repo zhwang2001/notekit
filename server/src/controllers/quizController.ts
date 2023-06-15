@@ -34,7 +34,6 @@ export const getQuiz = async (req: Request, res: Response) => {
         const query: String = request.prompt;
         const content = await openai.createChatCompletion({
             model: "gpt-3.5-turbo",
-            temperature: 0.6,
             messages: [{
                 role: "user",
                 content: `Can you generate a list of very high quality questions and answers using the following input text?: ${query}. The response you give me needs be in JSON format with example format being {"Placeholder Question 1": "Answer 1", "Placeholder Question 2": "Answer 2", ...}`,
