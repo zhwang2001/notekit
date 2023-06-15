@@ -30,7 +30,7 @@ const getQuiz = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             temperature: 0.6,
             messages: [{
                     role: "user",
-                    content: `Can you generate a list of very high quality questions and answers using the following input text?: ${query}. The response you give me should be in JSON format with example format being {Placeholder Question 1: Answer 1, Placeholder Question 2: Answer 2, ...}`,
+                    content: `Can you generate a list of very high quality questions and answers using the following input text?: ${query}. The response you give me needs be in JSON format with example format being {"Placeholder Question 1": "Answer 1", "Placeholder Question 2": "Answer 2", ...}`,
                 }],
         });
         //convert the string response into a nested array
