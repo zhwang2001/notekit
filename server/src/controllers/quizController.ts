@@ -29,28 +29,33 @@ const openai = new OpenAIApi(new Configuration({
  * @return void
  */
 export const getQuiz = async (req: Request, res: Response) => {
-    const request: Query = req.body;
-    const query: String = request.prompt;
-    const content = await openai.createChatCompletion({
-        model: "gpt-3.5-turbo",
-        temperature: 0.6,
-        messages: [{
-            role: "user",
-            content: `Can you generate a list of very high quality questions and answers using the following input text?: ${query}. The expected output should be in JSON format with example format being {Placeholder Question 1: Answer 1, Placeholder Question 2: Answer 2, ...}`,
-        }],
-    })
-    //convert the string response into a nested array
-    const response: string = content.data!.choices[0].message!.content;
-    const jsonResponse: Object = JSON.parse(response);
-    console.log(jsonResponse);
-    const questions: Array<string> = Object.keys(jsonResponse);
-    const answers: Array<string> = Object.values(jsonResponse);
-    if (questions.length !== answers.length) {
-        res.status(500).json("API response it not valid");
+    try {
+        const request: Query = req.body;
+        const query: String = request.prompt;
+        const content = await openai.createChatCompletion({
+            model: "gpt-3.5-turbo",
+            temperature: 0.6,
+            messages: [{
+                role: "user",
+                content: `Can you generate a list of very high quality questions and answers using the following input text?: ${query}. The response you give me should be in JSON format with example format being {Placeholder Question 1: Answer 1, Placeholder Question 2: Answer 2, ...}`,
+            }],
+        })
+        //convert the string response into a nested array
+        const response: string = content.data!.choices[0].message!.content;
+        console.log(response);
+        const jsonResponse: Object = JSON.parse(response);
+        const questions: Array<string> = Object.keys(jsonResponse);
+        const answers: Array<string> = Object.values(jsonResponse);
+        if (questions.length !== answers.length) {
+            res.status(500).json("API response it not valid");
+        }
+        let questionObject: questionAnswerList = {};
+        for (let i = 0; i < questions.length; i++) {
+            questionObject[`Q${i}`] = [questions[i], answers[i]];
+        }
+        res.json(questionObject).status(200);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json(error);
     }
-    let questionObject: questionAnswerList = {};
-    for (let i = 0; i < questions.length; i++) {
-        questionObject[`Q${i}`] = [questions[i], answers[i]];
-    }
-    res.json(questionObject).status(200);
 }
