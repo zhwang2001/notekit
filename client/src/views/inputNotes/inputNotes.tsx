@@ -28,7 +28,7 @@ type setStateResponse = React.Dispatch<React.SetStateAction<string[][]>>;
  */
 export default function InputNotes(props: {
   handlePageChange: pageChangeFunction,
-  setResponse: setStateResponse,
+  setResponse: setStateResponse
 }) {
 
   //defaultValue for the textField component
@@ -77,7 +77,7 @@ export default function InputNotes(props: {
   /**
    * @brief A function responsible for calling the api
    *
-   * @see setResponse sets the response to be utilized by other components
+   * @see {setStateResponse} setResponse sets the response to be utilized by other components
    */
   const submitPrompt = async (textInput: string): Promise<void> => {
     const response = await getQuiz({ prompt: textInput });
@@ -88,7 +88,7 @@ export default function InputNotes(props: {
   }
 
   return (
-    <div style={{ width: '30vw', height: '100vh', textAlign: 'center' }}>
+    <div style={{ width: '30vw', textAlign: 'center' }}>
       <Typography variant="h4" color="text.primary" sx={{ width: '100%', fontWeight: 550 }}>
         Notekit will generate a quiz from your uploaded PDF or notes
       </Typography>
@@ -97,7 +97,7 @@ export default function InputNotes(props: {
         submitPrompt={submitPrompt}
       />
       <Divider orientation={"horizontal"}
-        sx={{ width: '100%', fontSize: '20px', margin: '40px 0px 40px 0px' }}
+        sx={{ color: 'grey', width: '100%', fontSize: '20px', margin: '40px 0px 40px 0px' }}
       >or
       </Divider>
       <TextField
