@@ -5,14 +5,9 @@ import {getQuiz} from "../../api";
 import UploadPdf from './UploadNotes.tsx'
 
 //TODO
-//ability edit and make own flashcards
-//validation
-//utilize better prompt
-//extract text pdf
-
+//ability to make own flashcards
 //add error message
 //aria text label
-//best colors
 
 
 type pageChangeFunction = (direction: string) => void;
