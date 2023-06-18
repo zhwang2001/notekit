@@ -87,7 +87,7 @@ export default function InputNotes(props: {
     }
 
     return (
-        <div style={{width: '30vw', textAlign: 'center'}}>
+        <div style={{width: '30vw', textAlign: 'center', minWidth:'320px'}}>
             <Typography variant="h4" color="text.primary" sx={{width: '100%', fontWeight: 550}}>
                 Notekit will generate a quiz from your uploaded PDF or notes
             </Typography>

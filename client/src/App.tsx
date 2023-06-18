@@ -66,16 +66,17 @@ function App(): JSX.Element {
             <div style={{
                 width: '30vw',
                 display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
+                flexDirection: 'column',
                 textAlign: 'center',
-                flexFlow: 'row nowrap'
             }}>
-                <Tooltip title="Go Back" arrow>
-                    <IconButton onClick={() => handlePageChange('backward')} sx={{padding: '5px', margin: '10px'}}>
-                        <IoIosArrowBack/>
-                    </IconButton>
-                </Tooltip>
+                {/*<Tooltip title="Go Back" arrow>*/}
+                {/*    <IconButton onClick={() => handlePageChange('backward')} sx={{padding: '5px', margin: '10px'}}>*/}
+                {/*        <IoIosArrowBack/>*/}
+                {/*    </IconButton>*/}
+                {/*</Tooltip>*/}
+                <Typography variant="h3" color="text.primary" sx={{padding: '30px'}}>
+                    Creating Quiz!
+                </Typography>
                 {loadingTimedOut
                     ? <Typography
                         variant="h5"
