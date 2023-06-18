@@ -13,6 +13,10 @@ function App(): JSX.Element {
     const [loadingTimedOut, setLoadingTimedOut] = useState<boolean>(false)
     //define state management for starting the timer
     const [startTimer, setStartTimer] = useState<boolean>(false)
+    //define state management for storing gpt response
+    const [response, setResponse] = useState<string[][] | []>([]);
+    //define state management for checking if axios response status is 200
+    const [responseSuccess, setResponseSuccess] = useState<boolean>(false)
 
     /**
      * @brief An event handler for changing the page once generate button has been clicked
@@ -23,6 +27,7 @@ function App(): JSX.Element {
      * @see setResponse sets the response store back to empty array
      * @see setLoadingTimedOut sets the loading timeout back to false
      * @see setStartTimer sets the start timer state
+     * @see setResponseSuccess sets the responseSuccess back to false
      */
     const handlePageChange = (direction: string): void => {
         if (direction === "forward") {
@@ -33,10 +38,9 @@ function App(): JSX.Element {
             setResponse([])
             setLoadingTimedOut(false)
             setStartTimer(false)
+            setResponseSuccess(false)
         }
     }
-    //define state management for storing gpt response
-    const [response, setResponse] = useState<string[][] | []>([]);
 
     //timeout after 60 seconds
     useEffect(() => {
@@ -47,15 +51,17 @@ function App(): JSX.Element {
 
             return () => {
                 clearTimeout(timeoutId)
+                setStartTimer(false)
+                console.log('Timer Reset')
             }
         }
-    }, [handlePageChange])
+    }, [handlePageChange, startTimer])
 
     /**
-     *
-     * @returns {React.FC<JSX.Element>}
+     * @brief an intermediary page that's shown while request is being fulfilled
+     * @returns {React.FC<JSX.Element>} a loading indicator, back button and conditional error message
      */
-    const Loading: React.FC<unknown> = (): JSX.Element => {
+    function Loading(): JSX.Element {
         return (
             <div style={{
                 width: '30vw',
@@ -71,8 +77,11 @@ function App(): JSX.Element {
                     </IconButton>
                 </Tooltip>
                 {loadingTimedOut
-                    ? <Typography variant="h5" color="text.primary">We didn't accept your prompt. Please try
-                        again</Typography>
+                    ? <Typography
+                        variant="h5"
+                        color="text.primary">
+                        ChatGPT didn't accept your prompt. Please try again
+                    </Typography>
                     : <LinearProgress sx={{width: '100%'}}/>}
             </div>
         )
@@ -80,9 +89,13 @@ function App(): JSX.Element {
 
     //array that stores the different pages viewed by user
     const pages: Readonly<JSX.Element[]> = [
-        <InputNotes handlePageChange={handlePageChange} setResponse={setResponse}/>,
-        response.length !== 0
-            ? <FlashCards handlePageChange={handlePageChange} response={response}/>
+        <InputNotes handlePageChange={handlePageChange}
+                    setResponse={setResponse}
+                    setResponseSuccess={setResponseSuccess}/>,
+        responseSuccess
+            ? <FlashCards handlePageChange={handlePageChange}
+                          response={response}
+                          setResponse={setResponse}/>
             : <Loading/>
     ]
 
@@ -94,6 +107,7 @@ function App(): JSX.Element {
             */
             width: '100vw',
             height: '100vh',
+            padding: '5% 0% 5% 0%',
             borderRadius: '20px',
             display: 'flex',
             justifyContent: 'center',
