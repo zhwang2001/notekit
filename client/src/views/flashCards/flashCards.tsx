@@ -1,72 +1,110 @@
-import {Card, CardContent, Divider, IconButton,  Typography} from "@mui/material";
-import {IoCopyOutline, IoPencilOutline, IoTrashOutline} from "react-icons/io5";
-import {IoIosArrowBack} from "react-icons/io";
-type pageChangeFunction = (direction: string) => void;
-/**
- * @brief A functional UI component that displays the quiz name and all the flashcards
- *
- * @param {array} response this parameter contains the nested array obtained from ChatGPT's response
- * @param {function} handlePageChange this parameter contains the logic for changing pages
- * @returns {JSX.Element} the title and an array of flashcards
- * @constructor
- */
-export default function FlashCards(props: {handlePageChange: pageChangeFunction, response: string[][]}) {
-    return (
-        <CardContent sx={{height: '100vh', padding: '10%'}}>
-            <div style={{display: 'flex', flexDirection: 'row'}}>
-                <div style={{display: 'flex', alignItems: 'center'}}>
-                    <IconButton onClick={() => props.handlePageChange("backward")}>
-                        <IoIosArrowBack size={35}/>
-                    </IconButton>
-                </div>
-                <Typography variant={"h2"} color={"text.primary"} sx={{margin: '30px 0px 30px 10px', width: '100%'}}>
-                    Quiz
-                </Typography>
-            </div>
-            {props.response.map((data) => {
-                return (<FlashCard data={data}/>)
-            })}
-        </CardContent>
-    )
+import React from 'react';
+import { CardContent, IconButton, Tooltip, Typography } from "@mui/material";
+import { IoCopy } from "react-icons/io5";
+import { IoIosArrowBack, IoLogoTwitter } from "react-icons/io";
+import { clipboardWriter } from "./utils/functionalUtils.tsx";
+import { FlashCard } from "./components/flashCard.tsx";
+import { useDispatch } from 'react-redux';
+import { setAlert } from '../../reducers/alertsSlice.tsx';
+
+interface FlashCardsProps {
+    handlePageChange: (direction: string) => void;
+    response: string[][];
+    setResponse: React.Dispatch<React.SetStateAction<string[][] | []>>;
 }
 
 /**
- * @constructor
+ * @brief A functional UI component that displays the quiz name and all the flashcards.
  *
- * @brief A functional UI component that returns an individual flashcard
- *
- * @param {array} data parameter has an array containing the question and answer to flashcard
- * @returns {JSX.Element} the question and answer to the flashcard as well as buttons to interact with the flashcard
+ * @param {FlashCardsProps} props - The component props.
+ * @returns {JSX.Element} The title and an array of flashcards.
  */
-function FlashCard(props: {data: Array<string>}){
+export const FlashCards: React.FC<FlashCardsProps> = (props: FlashCardsProps): React.ReactElement => {
+
+    const { handlePageChange, response, setResponse } = props;
+    const dispatch = useDispatch();
+
+    /**
+     * @brief function used for formatting a nested array into a string
+     *
+     * @param {string[][]} flashcard
+     * @returns {string} questions and answers formatted to be copied
+     */
+    const FormatFlashcardArray = (flashcard: string[][]): string => {
+        return flashcard.map(([question, answer]): string => `Q: ${question} | A: ${answer}`).join('\n\n')
+    }
+
+    /**
+     * @constructor
+     *
+     * @brief function used to copy the entire quiz to your clipboard
+     *
+     * @see formatFlashCardArray process array into string
+     * @see clipboardWriter copy formatted string into clipboard
+     */
+    function CopyEntireQuiz(): void {
+        const flashcardString: string = FormatFlashcardArray(response)
+        clipboardWriter(flashcardString)
+        dispatch(setAlert(['Success', 'success', "Quiz successfully copied"]))
+        setTimeout(() => dispatch(setAlert([])), 5000);
+    }
+
+    /**
+     * @brief function for copying link to clipboard
+     *
+     * @see clipboardWriter copy formatted string into clipboard
+     */
+    function CopyShareableLink(): void {
+        const websiteLink: string = window.location.href;
+        clipboardWriter(websiteLink)
+        dispatch(setAlert(['Success', 'success', "Quiz Link successfully copied"]))
+        setTimeout(() => dispatch(setAlert([])), 5000);
+    }
+
     return (
-        <CardContent sx={{width: '30vw', display: 'flex', flexFlow: 'row nowrap'}}>
-            <Card sx={{
+        <CardContent sx={{ height: '100vh', padding: '10%' }}>
+            <div style={{
                 width: '100%',
-                backgroundColor: '#f2f2f2',
-                padding: '20px',
+                display: 'flex',
+                flexFlow: 'row wrap',
+                alignItems: 'center',
+                justifyContent: 'space-between'
             }}>
-                <div style={{display: 'flex', flexDirection: 'row'}}>
-                    <Typography variant={"h6"} color={"text.primary"} sx={{fontWeight: '600'}}>
-                        {props.data[0]}
+                <div style={{ float: 'left', display: 'flex', alignItems: 'center', }}>
+                    <IconButton onClick={(): void => {
+                        handlePageChange("backward");
+                    }}>
+                        <IoIosArrowBack size={35} />
+                    </IconButton>
+                    <Typography variant="h2" color="text.primary">
+                        Quiz
                     </Typography>
                 </div>
-                <Divider sx={{margin: '10px 0px 10px 0px'}} light/>
-                <Typography variant={"h6"} color={"text.secondary"}>
-                    {props.data[1]}
-                </Typography>
-            </Card>
-            <div style={{
-                display: 'flex',
-                flexFlow: 'column nowrap',
-                justifyContent: 'space-around',
-                padding: '10px',
-            }}>
-                <IconButton><IoCopyOutline/></IconButton>
-                <IconButton><IoPencilOutline/></IconButton>
-                <IconButton><IoTrashOutline/></IconButton>
+                <div>
+                    <Tooltip title={"Copy Entire Quiz"}
+                        arrow>
+                        <IconButton onClick={CopyEntireQuiz}>
+                            <IoCopy />
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title={"Share this Quiz"}
+                        arrow>
+                        <IconButton onClick={CopyShareableLink}>
+                            <IoLogoTwitter />
+                        </IconButton>
+                    </Tooltip>
+                </div>
             </div>
+            {response.map((data: string[], index: number) => (
+                <FlashCard
+                    data={data}
+                    index={index}
+                    response={response}
+                    setResponse={setResponse}
+                />
+            ))}
         </CardContent>
-    )
-}
+    );
+};
 
+export default FlashCards
