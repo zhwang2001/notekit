@@ -1,8 +1,10 @@
-import React, {JSX, useState} from "react";
-import {Button, Card, CardContent, Divider, TextField, Typography} from "@mui/material";
-import {clipboardWriter} from "../utils/functionalUtils.tsx";
-import {IoCopyOutline, IoPencilOutline, IoTrashOutline} from "react-icons/io5";
-import {ActionButton} from "./actionButton.tsx";
+import React, { JSX, useState } from "react";
+import { Button, Card, CardContent, Divider, TextField, Typography } from "@mui/material";
+import { clipboardWriter } from "../utils/functionalUtils.tsx";
+import { IoCopyOutline, IoPencilOutline, IoTrashOutline } from "react-icons/io5";
+import { ActionButton } from "./actionButton.tsx";
+import { useDispatch } from "react-redux";
+import { setAlert } from "../../../reducers/alertsSlice.tsx";
 
 interface FlashCardProps {
     data: Array<string>;
@@ -27,6 +29,7 @@ export function FlashCard(props: FlashCardProps): JSX.Element {
         response,
         setResponse,
     } = props;
+    const dispatch = useDispatch();
 
     //State management for managing the edit state
     const [editing, setEditing] = useState<boolean>(false)
@@ -47,6 +50,8 @@ export function FlashCard(props: FlashCardProps): JSX.Element {
         newResponse.splice(index, 1)
         console.log(newResponse)
         setResponse(newResponse)
+        dispatch(setAlert(["info", 'info', 'Flash card deleted']))
+        setTimeout(() => dispatch(setAlert([])), 5000);
     }
     /**
      * @brief event handler for copying flashcard to clipboard
@@ -58,6 +63,8 @@ export function FlashCard(props: FlashCardProps): JSX.Element {
         const answer: string = response[index][1]
         const flashcardString = `Q: ${question} | A: ${answer}`
         clipboardWriter(flashcardString)
+        dispatch(setAlert(["Success", 'success', 'Flash card successfully copied']))
+        setTimeout(() => dispatch(setAlert([])), 5000);
     }
 
 
@@ -82,6 +89,8 @@ export function FlashCard(props: FlashCardProps): JSX.Element {
         newResponse[index][1] = newAnswer
         setResponse(newResponse)
         setEditing(false)
+        dispatch(setAlert(["Success", 'success', 'Flash card changed']))
+        setTimeout(() => dispatch(setAlert([])), 5000);
     }
     /**
      * @brief event handler for canceling editing
@@ -111,8 +120,8 @@ export function FlashCard(props: FlashCardProps): JSX.Element {
     }
 
     return (
-        <CardContent sx={{display: 'flex', flexDirection: 'column'}}>
-            <div style={{width: '30vw', display: 'flex', flexFlow: 'row nowrap'}}>
+        <CardContent sx={{ display: 'flex', flexDirection: 'column' }}>
+            <div style={{ width: '30vw', display: 'flex', flexFlow: 'row nowrap' }}>
                 <Card sx={{
                     width: '100%',
                     backgroundColor: '#f2f2f2',
@@ -120,22 +129,22 @@ export function FlashCard(props: FlashCardProps): JSX.Element {
                 }}>
                     {editing
                         ? <TextField fullWidth variant={"standard"} size={"small"} defaultValue={data[0]} multiline
-                                     InputProps={{disableUnderline: true}}
-                                     sx={{padding: '10px 0px 10px 0px'}}
-                                     onChange={(e) => handleRecordFields(e, 'question')}
+                            InputProps={{ disableUnderline: true }}
+                            sx={{ padding: '10px 0px 10px 0px' }}
+                            onChange={(e) => handleRecordFields(e, 'question')}
                         />
                         : <Typography variant={"h6"} color={"text.primary"}
-                                      sx={{fontWeight: '600', padding: '10px 0px 10px 0px'}}>
+                            sx={{ fontWeight: '600', padding: '10px 0px 10px 0px' }}>
                             {data[0]}
                         </Typography>}
-                    <Divider sx={{margin: '10px 0px 10px 0px'}} light/>
+                    <Divider sx={{ margin: '10px 0px 10px 0px' }} light />
                     {editing
                         ? <TextField fullWidth variant={"standard"} size={"small"} defaultValue={data[1]} multiline
-                                     InputProps={{disableUnderline: true}}
-                                     sx={{padding: '10px 0px 10px 0px'}}
-                                     onChange={(e) => handleRecordFields(e, 'answer')}
+                            InputProps={{ disableUnderline: true }}
+                            sx={{ padding: '10px 0px 10px 0px' }}
+                            onChange={(e) => handleRecordFields(e, 'answer')}
                         />
-                        : <Typography variant={"h6"} color={"text.secondary"} sx={{padding: '5px 0px 5px 0px'}}>
+                        : <Typography variant={"h6"} color={"text.secondary"} sx={{ padding: '5px 0px 5px 0px' }}>
                             {data[1]}
                         </Typography>}
                 </Card>
@@ -150,21 +159,21 @@ export function FlashCard(props: FlashCardProps): JSX.Element {
                         index={index}
                         toolTipMsg={"Copy This Flashcard"}
                     >
-                        <IoCopyOutline/>
+                        <IoCopyOutline />
                     </ActionButton>
                     <ActionButton
                         eventHandler={handleEditChange}
                         index={index}
                         toolTipMsg={"Edit This Flashcard"}
                     >
-                        <IoPencilOutline/>
+                        <IoPencilOutline />
                     </ActionButton>
                     <ActionButton
                         eventHandler={handleDeleteFlashCard}
                         index={index}
                         toolTipMsg={"Delete This Flashcard"}
                     >
-                        <IoTrashOutline/>
+                        <IoTrashOutline />
                     </ActionButton>
                 </div>
             </div>
