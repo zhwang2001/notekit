@@ -71,7 +71,7 @@ function App(): JSX.Element {
                     </IconButton>
                 </Tooltip>
                 {loadingTimedOut
-                    ? <Typography variant="h5" color="text.primary">ChatGPT didn't accept your prompt. Please try
+                    ? <Typography variant="h5" color="text.primary">We didn't accept your prompt. Please try
                         again</Typography>
                     : <LinearProgress sx={{width: '100%'}}/>}
             </div>
@@ -94,7 +94,6 @@ function App(): JSX.Element {
             */
             width: '100vw',
             height: '100vh',
-            padding: '5% 0% 5% 0%',
             borderRadius: '20px',
             display: 'flex',
             justifyContent: 'center',

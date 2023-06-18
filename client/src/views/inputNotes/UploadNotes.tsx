@@ -178,13 +178,14 @@ export default function UploadPdf(props: {
                                 pdfToText(doc, pageRange, props.submitPrompt);
                                 props.handlePageChange('forward')
                             }} sx={{padding: '2px', margin: '10px'}}>
+                                Submit PDF
                                 <RxTriangleRight size={35} style={{color: '#253859'}}/>
                             </IconButton>
                         </Tooltip>
                         : null}
                 </div>
                 {showSlider
-                    ? <Box sx={{width: '100%'}}>
+                    ? <Box sx={{width: '100%', color: 'black'}}>
                         <Slider
                             getAriaLabel={() => 'Page Range'}
                             size={"small"}
@@ -195,6 +196,7 @@ export default function UploadPdf(props: {
                             valueLabelDisplay="auto"
                             getAriaValueText={pageNumber}
                         />
+                        Choose a range of pages to submit
                     </Box>
                     : null}
             </div>

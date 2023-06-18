@@ -113,6 +113,7 @@ export default function InputNotes(props: {
           handleCharacterCount(e)
         }}
         error={error}
+        label={"Provide an input text that will be used to create the flashcards"}
       ></TextField>
       <Button disabled={error}
         onClick={() => {
