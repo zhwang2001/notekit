@@ -1,13 +1,15 @@
-import React, {JSX, useRef, useState} from 'react'
+import React, { JSX, useRef, useState } from 'react'
 import * as pdfjslib from 'pdfjs-dist'
-import {PDFDocumentProxy, PDFPageProxy} from 'pdfjs-dist'
-import {TextContent} from "pdfjs-dist/types/web/text_layer_builder";
-import {Button, FormHelperText, IconButton, Tooltip, Typography} from "@mui/material";
-import {FiUpload} from 'react-icons/fi'
+import { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist'
+import { TextContent } from "pdfjs-dist/types/web/text_layer_builder";
+import { Button, FormHelperText, IconButton, Tooltip, Typography } from "@mui/material";
+import { FiUpload } from 'react-icons/fi'
 import Box from '@mui/material/Box'
 import Slider from '@mui/material/Slider'
-import {RxTriangleRight} from 'react-icons/rx'
-import {DocumentInitParameters, TypedArray} from "pdfjs-dist/types/src/display/api";
+import { RxTriangleRight } from 'react-icons/rx'
+import { DocumentInitParameters, TypedArray } from "pdfjs-dist/types/src/display/api";
+import { useDispatch } from 'react-redux';
+import { setAlert } from '../../reducers/alertsSlice';
 
 type pageChangeFunction = (direction: string) => void
 type submitPromptFunction = (textInput: string) => Promise<void>
@@ -26,6 +28,9 @@ export default function UploadPdf(props: {
     submitPrompt: submitPromptFunction
 }): JSX.Element {
 
+    const dispatch = useDispatch();
+    //define state management for managing upload error state
+    const [uploadError, setUploadError] = useState<boolean>(false)
     //define state management for managing helper text message
     const [helperMsg, setHelperMsg] = useState<string>('')
     //define state management for managing showSlider state
@@ -92,6 +97,9 @@ export default function UploadPdf(props: {
         if (file) {
             if (file.type === "application/pdf") {
                 setHelperMsg(`* Successfully Uploaded ${file.name}`)
+                setUploadError(false)
+                dispatch(setAlert(["Success", 'success', `Successfully uploaded ${file.name}`]))
+                setTimeout(() => dispatch(setAlert([])), 5000);
                 console.log('Uploaded file', file);
                 //initialize fileReader to convert PDF file to base64 string
                 const reader: FileReader = new FileReader();
@@ -104,8 +112,11 @@ export default function UploadPdf(props: {
                 }
                 reader.readAsDataURL(file);
             } else {
-                setHelperMsg('* Invalid File Type. Only PDF files are allowed')
+                setHelperMsg(`* Invalid File Type {${file.type}}. Only PDF files are allowed`)
                 setShowSlider(false)
+                setUploadError(true)
+                dispatch(setAlert(['Error', 'error', 'Invalid File Type. Only PDF files are allowed']))
+                setTimeout(() => dispatch(setAlert([])), 5000);
             }
 
         }
@@ -121,30 +132,31 @@ export default function UploadPdf(props: {
     }
 
     return (
-        <div style={{width: '100%', display: 'flex', alignItems: 'center', flexDirection: 'column'}}>
+        <div style={{ width: '100%', display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
             <div>
 
                 <input
                     type={"file"}
                     accept={".pdf"}
-                    style={{display: 'none'}}
+                    style={{ display: 'none' }}
                     ref={fileInputRef}
                     onChange={handleFileChange}
                 />
-                <div style={{display: 'flex', alignItems: 'center', flexDirection: 'row'}}>
+                <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'row' }}>
                     <FormHelperText sx={{
                         display: 'flex',
                         flexDirection: 'column',
                         width: '300px'
-                    }}>
+                    }}
+                        error={uploadError}>
                         <Button
                             sx={{
-                                "&.Mui-disabled": {backgroundColor: 'lightGrey', color: 'white'},
+                                "&.Mui-disabled": { backgroundColor: 'lightGrey', color: 'white' },
                                 backgroundColor: '#253859',
                                 width: '300px',
                                 padding: '0px',
                                 marginTop: '20px',
-                                '&:hover': {backgroundColor: 'black', color: 'aqua'},
+                                '&:hover': { backgroundColor: 'black', color: 'aqua' },
                             }}
                             onClick={handleFileUpload}>
                             <Typography
@@ -158,7 +170,7 @@ export default function UploadPdf(props: {
                                     alignItems: 'center',
                                     padding: '5px 0px 5px 0px',
                                 }}>
-                                <FiUpload style={{padding: '10px 10px 15px 10px'}}/>
+                                <FiUpload style={{ padding: '10px 10px 15px 10px' }} />
                                 Upload PDF Here
                             </Typography>
                         </Button>
@@ -174,18 +186,20 @@ export default function UploadPdf(props: {
                     {showSlider && doc
                         ? <Tooltip title={"Submit the PDF"} placement={'right'} arrow>
                             {/*convert pdf to text*/}
-                            <IconButton onClick={() => {
+                            <Button onClick={() => {
                                 pdfToText(doc, pageRange, props.submitPrompt);
                                 props.handlePageChange('forward')
-                            }} sx={{padding: '2px', margin: '10px'}}>
-                                Submit PDF
-                                <RxTriangleRight size={35} style={{color: '#253859'}}/>
-                            </IconButton>
+                            }} sx={{ padding: '10px', marginLeft: '10px', display: 'flex', alignItems: 'center' }}>
+                                <Typography variant="h6" color="text.secondary" sx={{ fontSize: '15px', padding: '5px 0px 0px 5px' }}>
+                                    Submit PDF
+                                </Typography>
+                                <RxTriangleRight size={35} style={{ color: '#253859' }} />
+                            </Button>
                         </Tooltip>
                         : null}
                 </div>
                 {showSlider
-                    ? <Box sx={{width: '100%', color: 'black'}}>
+                    ? <Box sx={{ width: '100%', color: 'black' }}>
                         <Slider
                             getAriaLabel={() => 'Page Range'}
                             size={"small"}
@@ -196,7 +210,9 @@ export default function UploadPdf(props: {
                             valueLabelDisplay="auto"
                             getAriaValueText={pageNumber}
                         />
-                        Choose a range of pages to submit
+                        <Typography variant="h6" color="text.secondary" sx={{ fontSize: '15px' }}>
+                            Choose a range of pages to submit
+                        </Typography>
                     </Box>
                     : null}
             </div>

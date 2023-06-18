@@ -1,10 +1,12 @@
 import './App.css';
-import React, {JSX, useEffect, useState} from 'react'
+import { JSX, useEffect, useState } from 'react'
 import InputNotes from "./views/inputNotes/inputNotes";
 import FlashCards from "./views/flashCards/flashCards"
-import {IconButton, LinearProgress, Tooltip, Typography} from "@mui/material";
+import { Alert, AlertTitle, IconButton, LinearProgress, Snackbar, Tooltip, Typography } from "@mui/material";
 import backgroundImage from './assets/background_image.jpg'
-import {IoIosArrowBack} from "react-icons/io";
+import { IoIosArrowBack } from "react-icons/io";
+import { useSelector } from 'react-redux';
+
 
 function App(): JSX.Element {
     //define state management for which page is being shown
@@ -57,6 +59,7 @@ function App(): JSX.Element {
         }
     }, [handlePageChange, startTimer])
 
+
     /**
      * @brief an intermediary page that's shown while request is being fulfilled
      * @returns {React.FC<JSX.Element>} a loading indicator, back button and conditional error message
@@ -72,8 +75,8 @@ function App(): JSX.Element {
                 flexFlow: 'row nowrap'
             }}>
                 <Tooltip title="Go Back" arrow>
-                    <IconButton onClick={() => handlePageChange('backward')} sx={{padding: '5px', margin: '10px'}}>
-                        <IoIosArrowBack/>
+                    <IconButton onClick={() => handlePageChange('backward')} sx={{ padding: '5px', margin: '10px' }}>
+                        <IoIosArrowBack />
                     </IconButton>
                 </Tooltip>
                 {loadingTimedOut
@@ -82,7 +85,7 @@ function App(): JSX.Element {
                         color="text.primary">
                         ChatGPT didn't accept your prompt. Please try again
                     </Typography>
-                    : <LinearProgress sx={{width: '100%'}}/>}
+                    : <LinearProgress sx={{ width: '100%' }} />}
             </div>
         )
     }
@@ -90,25 +93,28 @@ function App(): JSX.Element {
     //array that stores the different pages viewed by user
     const pages: Readonly<JSX.Element[]> = [
         <InputNotes handlePageChange={handlePageChange}
-                    setResponse={setResponse}
-                    setResponseSuccess={setResponseSuccess}/>,
+            setResponse={setResponse}
+            setResponseSuccess={setResponseSuccess} />,
         responseSuccess
             ? <FlashCards handlePageChange={handlePageChange}
-                          response={response}
-                          setResponse={setResponse}/>
-            : <Loading/>
+                response={response}
+                setResponse={setResponse} />
+            : <Loading />
     ]
+
+    const alert = useSelector((state: unknown) => state.alerts.alert)
+    const [showSnackbar, setShowSnackbar] = useState(true);
+
+    useEffect(() => {
+        if (!alert.length) {
+            setShowSnackbar(true);
+        }
+    }, [alert])
 
     return (
         <div style={{
-            /*
-            width: '700px',
-            height: '600px',
-            */
             width: '100vw',
             height: '100vh',
-            padding: '5% 0% 5% 0%',
-            borderRadius: '20px',
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
@@ -118,8 +124,17 @@ function App(): JSX.Element {
             backgroundRepeat: 'no-repeat',
             overflowY: 'scroll',
         }}>
+            {alert.length > 0
+                ?
+                <Snackbar open={showSnackbar} onClose={() => { if (!alert.length) { setShowSnackbar(false) }; }} autoHideDuration={5000} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
+                    <Alert severity={alert[1]} variant="filled">
+                        <AlertTitle>{alert[0]}</AlertTitle>
+                        {alert[2]}
+                    </Alert>
+                </Snackbar>
+                : null}
             {pages[pageIndex]}
-        </div>
+        </div >
     );
 }
 

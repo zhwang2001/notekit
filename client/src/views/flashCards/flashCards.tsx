@@ -1,9 +1,11 @@
 import React from 'react';
-import {CardContent, IconButton, Tooltip, Typography} from "@mui/material";
-import {IoCopy} from "react-icons/io5";
-import {IoIosArrowBack, IoLogoTwitter} from "react-icons/io";
-import {clipboardWriter} from "./utils/functionalUtils.tsx";
-import {FlashCard} from "./components/flashCard.tsx";
+import { CardContent, IconButton, Tooltip, Typography } from "@mui/material";
+import { IoCopy } from "react-icons/io5";
+import { IoIosArrowBack, IoLogoTwitter } from "react-icons/io";
+import { clipboardWriter } from "./utils/functionalUtils.tsx";
+import { FlashCard } from "./components/flashCard.tsx";
+import { useDispatch } from 'react-redux';
+import { setAlert } from '../../reducers/alertsSlice.tsx';
 
 interface FlashCardsProps {
     handlePageChange: (direction: string) => void;
@@ -19,7 +21,8 @@ interface FlashCardsProps {
  */
 export const FlashCards: React.FC<FlashCardsProps> = (props: FlashCardsProps): React.ReactElement => {
 
-    const {handlePageChange, response, setResponse} = props;
+    const { handlePageChange, response, setResponse } = props;
+    const dispatch = useDispatch();
 
     /**
      * @brief function used for formatting a nested array into a string
@@ -42,6 +45,8 @@ export const FlashCards: React.FC<FlashCardsProps> = (props: FlashCardsProps): R
     function CopyEntireQuiz(): void {
         const flashcardString: string = FormatFlashcardArray(response)
         clipboardWriter(flashcardString)
+        dispatch(setAlert(['Success', 'success', "Quiz successfully copied"]))
+        setTimeout(() => dispatch(setAlert([])), 5000);
     }
 
     /**
@@ -52,10 +57,12 @@ export const FlashCards: React.FC<FlashCardsProps> = (props: FlashCardsProps): R
     function CopyShareableLink(): void {
         const websiteLink: string = window.location.href;
         clipboardWriter(websiteLink)
+        dispatch(setAlert(['Success', 'success', "Quiz Link successfully copied"]))
+        setTimeout(() => dispatch(setAlert([])), 5000);
     }
 
     return (
-        <CardContent sx={{height: '100vh', padding: '10%'}}>
+        <CardContent sx={{ height: '100vh', padding: '10%' }}>
             <div style={{
                 width: '100%',
                 display: 'flex',
@@ -63,11 +70,11 @@ export const FlashCards: React.FC<FlashCardsProps> = (props: FlashCardsProps): R
                 alignItems: 'center',
                 justifyContent: 'space-between'
             }}>
-                <div style={{float: 'left', display: 'flex', alignItems: 'center',}}>
+                <div style={{ float: 'left', display: 'flex', alignItems: 'center', }}>
                     <IconButton onClick={(): void => {
                         handlePageChange("backward");
                     }}>
-                        <IoIosArrowBack size={35}/>
+                        <IoIosArrowBack size={35} />
                     </IconButton>
                     <Typography variant="h2" color="text.primary">
                         Quiz
@@ -75,15 +82,15 @@ export const FlashCards: React.FC<FlashCardsProps> = (props: FlashCardsProps): R
                 </div>
                 <div>
                     <Tooltip title={"Copy Entire Quiz"}
-                             arrow>
+                        arrow>
                         <IconButton onClick={CopyEntireQuiz}>
-                            <IoCopy/>
+                            <IoCopy />
                         </IconButton>
                     </Tooltip>
                     <Tooltip title={"Share this Quiz"}
-                             arrow>
+                        arrow>
                         <IconButton onClick={CopyShareableLink}>
-                            <IoLogoTwitter/>
+                            <IoLogoTwitter />
                         </IconButton>
                     </Tooltip>
                 </div>
