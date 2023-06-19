@@ -1,11 +1,11 @@
 import './App.css';
-import { JSX, useEffect, useState } from 'react'
+import {JSX, useEffect, useState} from 'react'
 import InputNotes from "./views/inputNotes/inputNotes";
 import FlashCards from "./views/flashCards/flashCards"
-import { Alert, AlertTitle, IconButton, LinearProgress, Snackbar, Tooltip, Typography } from "@mui/material";
+import {Alert, AlertTitle, LinearProgress, Snackbar, Typography} from "@mui/material";
 import backgroundImage from './assets/background_image.jpg'
-import { IoIosArrowBack } from "react-icons/io";
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
+import type {RootState} from "./store";
 
 
 function App(): JSX.Element {
@@ -86,7 +86,7 @@ function App(): JSX.Element {
                         color="text.primary">
                         ChatGPT didn't accept your prompt. Please try again
                     </Typography>
-                    : <LinearProgress sx={{ width: '100%' }} />}
+                    : <LinearProgress sx={{width: '100%'}}/>}
             </div>
         )
     }
@@ -94,16 +94,16 @@ function App(): JSX.Element {
     //array that stores the different pages viewed by user
     const pages: Readonly<JSX.Element[]> = [
         <InputNotes handlePageChange={handlePageChange}
-            setResponse={setResponse}
-            setResponseSuccess={setResponseSuccess} />,
+                    setResponse={setResponse}
+                    setResponseSuccess={setResponseSuccess}/>,
         responseSuccess
             ? <FlashCards handlePageChange={handlePageChange}
-                response={response}
-                setResponse={setResponse} />
-            : <Loading />
+                          response={response}
+                          setResponse={setResponse}/>
+            : <Loading/>
     ]
 
-    const alert = useSelector((state: unknown) => state.alerts.alert)
+    const alert = useSelector((state: RootState) => state.alerts.alert)
     const [showSnackbar, setShowSnackbar] = useState(true);
 
     useEffect(() => {
@@ -127,7 +127,12 @@ function App(): JSX.Element {
         }}>
             {alert.length > 0
                 ?
-                <Snackbar open={showSnackbar} onClose={() => { if (!alert.length) { setShowSnackbar(false) }; }} autoHideDuration={5000} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
+                <Snackbar open={showSnackbar} onClose={() => {
+                    if (!alert.length) {
+                        setShowSnackbar(false)
+                    }
+                    ;
+                }} autoHideDuration={5000} anchorOrigin={{vertical: 'top', horizontal: 'right'}}>
                     <Alert severity={alert[1]} variant="filled">
                         <AlertTitle>{alert[0]}</AlertTitle>
                         {alert[2]}
@@ -135,7 +140,7 @@ function App(): JSX.Element {
                 </Snackbar>
                 : null}
             {pages[pageIndex]}
-        </div >
+        </div>
     );
 }
 
