@@ -3,8 +3,7 @@ import { Button, Card, CardContent, Divider, TextField, Typography } from "@mui/
 import { clipboardWriter } from "../utils/functionalUtils.tsx";
 import { IoCopyOutline, IoPencilOutline, IoTrashOutline } from "react-icons/io5";
 import { ActionButton } from "./actionButton.tsx";
-import { useDispatch } from "react-redux";
-import { setAlert } from "../../../reducers/alertsSlice.tsx";
+import {useSnackbar, VariantType} from "notistack";
 
 interface FlashCardProps {
     data: Array<string>;
@@ -29,7 +28,6 @@ export function FlashCard(props: FlashCardProps): JSX.Element {
         response,
         setResponse,
     } = props;
-    const dispatch = useDispatch();
 
     //State management for managing the edit state
     const [editing, setEditing] = useState<boolean>(false)
@@ -37,6 +35,8 @@ export function FlashCard(props: FlashCardProps): JSX.Element {
     const [newQuestion, setNewQuestion] = useState<string>(response[index][0])
     //State management for storing new answers
     const [newAnswer, setNewAnswer] = useState<string>(response[index][1])
+    //custom hook for displaying special global messages
+    const {enqueueSnackbar } = useSnackbar();
 
 
     /**
@@ -49,8 +49,8 @@ export function FlashCard(props: FlashCardProps): JSX.Element {
         const newResponse: string[][] = [...response];
         newResponse.splice(index, 1)
         setResponse(newResponse)
-        dispatch(setAlert(["info", 'info', 'Flash card deleted']))
-        setTimeout(() => dispatch(setAlert([])), 5000);
+        const variant: VariantType = 'success'
+        enqueueSnackbar('Flashcard deleted!', { variant })
     }
     /**
      * @brief event handler for copying flashcard to clipboard
@@ -62,8 +62,8 @@ export function FlashCard(props: FlashCardProps): JSX.Element {
         const answer: string = response[index][1]
         const flashcardString = `Q: ${question} | A: ${answer}`
         clipboardWriter(flashcardString)
-        dispatch(setAlert(["Success", 'success', 'Flash card successfully copied']))
-        setTimeout(() => dispatch(setAlert([])), 5000);
+        const variant: VariantType = 'success'
+        enqueueSnackbar('Flashcard successfully copied!', {variant})
     }
 
 
@@ -74,6 +74,8 @@ export function FlashCard(props: FlashCardProps): JSX.Element {
      */
     const handleEditChange = (): void => {
         setEditing(!editing)
+        const variant: VariantType = 'info'
+        enqueueSnackbar('Editing flashcard', { variant })
     };
 
     //Event handlers for editing flashcards functionality
@@ -88,8 +90,8 @@ export function FlashCard(props: FlashCardProps): JSX.Element {
         newResponse[index][1] = newAnswer
         setResponse(newResponse)
         setEditing(false)
-        dispatch(setAlert(["Success", 'success', 'Flash card changed']))
-        setTimeout(() => dispatch(setAlert([])), 5000);
+        const variant: VariantType = 'success'
+        enqueueSnackbar('Flashcard changes saved!', {variant})
     }
     /**
      * @brief event handler for canceling editing
@@ -98,6 +100,8 @@ export function FlashCard(props: FlashCardProps): JSX.Element {
      */
     const handleCancelEdit = (): void => {
         setEditing(false)
+        const variant: VariantType = 'info'
+        enqueueSnackbar('Editing cancelled', { variant })
     }
 
     type Fields = 'question' | 'answer'

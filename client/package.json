@@ -17,6 +17,7 @@
     "@reduxjs/toolkit": "^1.9.5",
     "axios": "^1.4.0",
     "dotenv": "^16.1.4",
+    "notistack": "^3.0.1",
     "openai": "^3.2.1",
     "pdfjs-dist": "^3.7.107",
     "react": "^18.2.0",

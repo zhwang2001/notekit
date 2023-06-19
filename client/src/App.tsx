@@ -1,11 +1,9 @@
 import './App.css';
-import {JSX, useCallback, useEffect, useState} from 'react'
+import  {JSX, useCallback, useEffect, useState} from 'react'
 import InputNotes from "./views/inputNotes/inputNotes";
 import FlashCards from "./views/flashCards/flashCards"
-import { Alert, AlertTitle, LinearProgress, Snackbar, Typography } from "@mui/material";
+import {  LinearProgress,  Typography } from "@mui/material";
 import backgroundImage from './assets/background_image.jpg'
-import { useSelector } from 'react-redux';
-import {RootState} from "./reducers/alertsSlice.tsx";
 
 function App(): JSX.Element {
     //define state management for which page is being shown
@@ -95,15 +93,6 @@ function App(): JSX.Element {
                 setResponse={setResponse} />
             : <Loading />
     ]
-    //retrieve alert from global store
-    const alert: never[] = useSelector((state: RootState) => state.alerts.alert)
-    const [showSnackbar, setShowSnackbar] = useState<boolean>(true);
-
-    useEffect(() :void => {
-        if (!alert.length) {
-            setShowSnackbar(true);
-        }
-    }, [alert])
 
     return (
         <div style={{
@@ -118,15 +107,6 @@ function App(): JSX.Element {
             backgroundRepeat: 'no-repeat',
             overflowY: 'scroll',
         }}>
-            {alert.length > 0
-                ?
-                <Snackbar open={showSnackbar} onClose={() => { if (!alert.length) { setShowSnackbar(false) } }} autoHideDuration={5000} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
-                    <Alert severity={alert[1]} variant="filled">
-                        <AlertTitle>{alert[0]}</AlertTitle>
-                        {alert[2]}
-                    </Alert>
-                </Snackbar>
-                : null}
             {pages[pageIndex]}
         </div >
     );

@@ -5,6 +5,7 @@ import { getQuiz } from "../../api";
 import UploadPdf from './UploadNotes.tsx'
 import { useDispatch } from 'react-redux';
 import { setAlert } from '../../reducers/alertsSlice.tsx';
+import {useSnackbar, VariantType} from "notistack";
 
 //TODO
 //ability to make own flashcards
@@ -47,10 +48,10 @@ export default function InputNotes(props: {
     const [characterCount, setCharacterCount] = useState<string>(`${initialString.length} / ${characterLimit}`);
     //define state management for managing error state
     const [error, setError] = useState<boolean>(false);
-    //define state management for displaying error messages
-    //const [errorMessage, setErrorMessage] = useState("");
     //define state management for managing the user input
     const [textInput, setTextInput] = useState<string>(initialString)
+    //custom hook for displaying special global messages
+    const {enqueueSnackbar } = useSnackbar();
 
     /**
      * @brief An event handler that displays the number of characters already used and validates the input
@@ -68,20 +69,18 @@ export default function InputNotes(props: {
         if (inputValidation(typedCharacters)) {
             setError(false)
             setTextInput(e.target.value);
-            dispatch(setAlert([]))
             //if RegExp test returns false
         } else if (!inputValidation(typedCharacters)) {
             setError(true)
-            dispatch(setAlert(['Error', 'error', 'Must input between 500 and 10000 characters']))
-            setTimeout(() => dispatch(setAlert([])), 5000);
-
+            const variant: VariantType = "warning"
+            enqueueSnackbar('Must input between 500 and 10000 characters', {variant})
         }
     }
 
     /**
      * @brief A function responsible for calling the api
      *
-     * @see setResponse sets the response to be utilized by other components
+     * @see setResponse sets the response to be utilized by other utils
      * @see setResponseStatusSuccess sets the status of the Axios response
      */
     const submitPrompt = async (textInput: string): Promise<void> => {

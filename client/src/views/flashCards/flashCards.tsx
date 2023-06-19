@@ -5,7 +5,7 @@ import { IoIosArrowBack, IoLogoTwitter } from "react-icons/io";
 import { clipboardWriter } from "./utils/functionalUtils.tsx";
 import { FlashCard } from "./components/flashCard.tsx";
 import { useDispatch } from 'react-redux';
-import { setAlert } from '../../reducers/alertsSlice.tsx';
+import {useSnackbar, VariantType} from "notistack";
 
 interface FlashCardsProps {
     handlePageChange: (direction: string) => void;
@@ -22,7 +22,7 @@ interface FlashCardsProps {
 export const FlashCards: React.FC<FlashCardsProps> = (props: FlashCardsProps): React.ReactElement => {
 
     const { handlePageChange, response, setResponse } = props;
-    const dispatch = useDispatch();
+    const { enqueueSnackbar } = useSnackbar();
 
     /**
      * @brief function used for formatting a nested array into a string
@@ -45,8 +45,8 @@ export const FlashCards: React.FC<FlashCardsProps> = (props: FlashCardsProps): R
     function CopyEntireQuiz(): void {
         const flashcardString: string = FormatFlashcardArray(response)
         clipboardWriter(flashcardString)
-        dispatch(setAlert(['Success', 'success', "Quiz successfully copied"]))
-        setTimeout(() => dispatch(setAlert([])), 5000);
+        const variant: VariantType = 'success'
+        enqueueSnackbar('Quiz successfully copied!', {variant})
     }
 
     /**
@@ -57,8 +57,8 @@ export const FlashCards: React.FC<FlashCardsProps> = (props: FlashCardsProps): R
     function CopyShareableLink(): void {
         const websiteLink: string = window.location.href;
         clipboardWriter(websiteLink)
-        dispatch(setAlert(['Success', 'success', "Quiz Link successfully copied"]))
-        setTimeout(() => dispatch(setAlert([])), 5000);
+        const variant: VariantType = 'success'
+        enqueueSnackbar('Quiz link successfully copied!', {variant})
     }
 
     return (

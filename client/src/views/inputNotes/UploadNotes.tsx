@@ -13,12 +13,10 @@ import {
     TextMarkedContent,
     TypedArray
 } from "pdfjs-dist/types/src/display/api";
-import { useDispatch } from 'react-redux';
-import { setAlert } from '../../reducers/alertsSlice';
+import {useSnackbar, VariantType} from "notistack";
 
 type pageChangeFunction = (direction: string) => void
 type submitPromptFunction = (textInput: string) => Promise<void>
-
 
 /**
  * @constructor
@@ -33,14 +31,13 @@ export default function UploadPdf(props: {
     submitPrompt: submitPromptFunction
 }): JSX.Element {
 
-    const dispatch = useDispatch();
     //define state management for managing upload error state
     const [uploadError, setUploadError] = useState<boolean>(false)
     //define state management for managing helper text message
     const [helperMsg, setHelperMsg] = useState<string>('')
     //define state management for managing showSlider state
     const [showSlider, setShowSlider] = useState<boolean>(false)
-    //define state management for managing pages selected
+    //define state management for storing pages selected
     type firstPage = 1
     type finalPage = number
     const [pageRange, setPageRange] = useState<[firstPage, finalPage]>([1, 1]);
@@ -48,7 +45,8 @@ export default function UploadPdf(props: {
     const [numPages, setNumPages] = useState<number>(0)
     //define state management for storing the processed pdf
     const [doc, setDoc] = useState<PDFDocumentProxy | undefined>(undefined)
-
+    //custom hook for displaying special global messages
+    const {enqueueSnackbar } = useSnackbar();
     /**
      * @brief used for aria label
      * @param {number} value
@@ -101,10 +99,13 @@ export default function UploadPdf(props: {
         const file: File | undefined = e.target.files?.[0];
         if (file) {
             if (file.type === "application/pdf") {
-                setHelperMsg(`* Successfully Uploaded ${file.name}`)
+                const successMessage= `Successfully Uploaded ${file.name}`
+                //set local message
+                setHelperMsg(successMessage)
+                //set global message
+                const variant: VariantType = 'success'
+                enqueueSnackbar(successMessage, { variant })
                 setUploadError(false)
-                dispatch(setAlert(["Success", 'success', `Successfully uploaded ${file.name}`]))
-                setTimeout(() => dispatch(setAlert([])), 5000);
                 //initialize fileReader to convert PDF file to base64 string
                 const reader: FileReader = new FileReader();
                 reader.onload = (): void => {
@@ -116,11 +117,12 @@ export default function UploadPdf(props: {
                 }
                 reader.readAsDataURL(file);
             } else {
-                setHelperMsg(`* Invalid File Type {${file.type}}. Only PDF files are allowed`)
+                const errorMessage  = `* Invalid File Type {${file.type}}. Only PDF files are allowed`
+                setHelperMsg(errorMessage)
+                const variant: VariantType = 'error'
+                enqueueSnackbar(errorMessage, { variant })
                 setShowSlider(false)
                 setUploadError(true)
-                dispatch(setAlert(['Error', 'error', 'Invalid File Type. Only PDF files are allowed']))
-                setTimeout(() => dispatch(setAlert([])), 5000);
             }
 
         }
@@ -190,7 +192,8 @@ export default function UploadPdf(props: {
                     {showSlider && doc
                         ? <Tooltip title={"Submit the PDF"} placement={'right'} arrow>
                             {/*convert pdf to text*/}
-                            <Button onClick={() => {
+                            <Button
+                                onClick={() => {
                                 pdfToText(doc, pageRange, props.submitPrompt);
                                 props.handlePageChange('forward')
                             }} sx={{ padding: '10px', marginLeft: '10px', display: 'flex', alignItems: 'center' }}>
