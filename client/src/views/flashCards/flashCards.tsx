@@ -4,7 +4,6 @@ import { IoCopy } from "react-icons/io5";
 import { IoIosArrowBack, IoLogoTwitter } from "react-icons/io";
 import { clipboardWriter } from "./utils/functionalUtils.tsx";
 import { FlashCard } from "./components/flashCard.tsx";
-import { useDispatch } from 'react-redux';
 import {useSnackbar, VariantType} from "notistack";
 
 interface FlashCardsProps {

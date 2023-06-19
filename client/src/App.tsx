@@ -2,8 +2,9 @@ import './App.css';
 import  {JSX, useCallback, useEffect, useState} from 'react'
 import InputNotes from "./views/inputNotes/inputNotes";
 import FlashCards from "./views/flashCards/flashCards"
-import {  LinearProgress,  Typography } from "@mui/material";
+import {  LinearProgress,  IconButton, Typography } from "@mui/material";
 import backgroundImage from './assets/background_image.jpg'
+import {IoIosArrowBack} from "react-icons/io";
 
 function App(): JSX.Element {
     //define state management for which page is being shown
@@ -68,9 +69,16 @@ function App(): JSX.Element {
                 flexDirection: 'column',
                 textAlign: 'center',
             }}>
-                <Typography variant="h3" color="text.primary" sx={{padding: '30px'}}>
-                    Creating Quiz!
-                </Typography>
+                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                    {loadingTimedOut
+                        ? <IconButton onClick={() => handlePageChange('backward')}>
+                                <IoIosArrowBack />
+                        </IconButton>
+                        : null}
+                        <Typography variant="h3" color="text.primary" sx={{padding: '30px'}}>
+                            Creating Quiz!
+                        </Typography>
+                </div>
                 {loadingTimedOut
                     ? <Typography
                         variant="h5"

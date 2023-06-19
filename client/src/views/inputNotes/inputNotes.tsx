@@ -3,8 +3,6 @@ import { Button, Divider, TextField, Typography } from "@mui/material";
 import { inputValidation } from "./utils/validationUtils.ts";
 import { getQuiz } from "../../api";
 import UploadPdf from './UploadNotes.tsx'
-import { useDispatch } from 'react-redux';
-import { setAlert } from '../../reducers/alertsSlice.tsx';
 import {useSnackbar, VariantType} from "notistack";
 
 //TODO
@@ -31,7 +29,6 @@ export default function InputNotes(props: {
     setResponseSuccess: setStateResponseStatus
 }) {
 
-    const dispatch = useDispatch();
     //defaultValue for the textField component
     const initialString: Readonly<string> = "Example: Einstein was born on March 14, 1879, in Ulm, Germany, a town that today has " +
         "a population of just more than 120,000. There is a small commemorative plaque where his house " +
