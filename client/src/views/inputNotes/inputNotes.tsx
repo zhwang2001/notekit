@@ -1,10 +1,10 @@
-import React, { useState } from 'react'
-import { Button, Divider, TextField, Typography } from "@mui/material";
-import { inputValidation } from "./utils/validationUtils.ts";
-import { getQuiz } from "../../api";
+import React, {useState} from 'react'
+import {Button, Divider, TextField, Typography} from "@mui/material";
+import {inputValidation} from "./utils/validationUtils.ts";
+import {getQuiz} from "../../api";
 import UploadPdf from './UploadNotes.tsx'
-import { useDispatch } from 'react-redux';
-import { setAlert } from '../../reducers/alertsSlice.tsx';
+import {useDispatch} from 'react-redux';
+import {setAlert} from '../../reducers/alertsSlice.tsx';
 
 //TODO
 //ability to make own flashcards
@@ -85,7 +85,7 @@ export default function InputNotes(props: {
      * @see setResponseStatusSuccess sets the status of the Axios response
      */
     const submitPrompt = async (textInput: string): Promise<void> => {
-        const response = await getQuiz({ prompt: textInput });
+        const response = await getQuiz({prompt: textInput});
         console.log(response);
         const questionsAndAnswers: object = response.data;
         const nestedArray: string[][] = Object.values(questionsAndAnswers);
@@ -94,7 +94,7 @@ export default function InputNotes(props: {
     }
 
     return (
-        <div style={{width: '30vw', textAlign: 'center', minWidth:'320px'}}>
+        <div style={{width: '30vw', textAlign: 'center', minWidth: '320px'}}>
             <Typography variant="h4" color="text.primary" sx={{width: '100%', fontWeight: 550}}>
                 Notekit will generate a quiz from your uploaded PDF or notes
             </Typography>
@@ -103,7 +103,7 @@ export default function InputNotes(props: {
                 submitPrompt={submitPrompt}
             />
             <Divider orientation={"horizontal"}
-                sx={{ color: 'grey', width: '100%', fontSize: '20px', margin: '40px 0px 40px 0px' }}
+                     sx={{color: 'grey', width: '100%', fontSize: '20px', margin: '40px 0px 40px 0px'}}
             >or
             </Divider>
             <TextField
@@ -121,22 +121,22 @@ export default function InputNotes(props: {
                 error={error}
             ></TextField>
             <Button disabled={error}
-                onClick={() => {
-                    props.handlePageChange('forward');
-                    submitPrompt(textInput)
-                        .then(() => console.log('Successfully created quiz!'))
-                        .catch(error => console.log('An error has occurred: ', error))
-                }}
-                sx={{
-                    float: 'right',
-                    "&.Mui-disabled": { backgroundColor: 'lightGrey', color: 'white' },
-                    backgroundColor: '#253859',
-                    color: 'aqua',
-                    padding: '10px',
-                    margin: '10px',
-                    '&:hover': { backgroundColor: 'black', color: 'aqua' },
-                }}>
-                <Typography variant={"h6"} sx={{ fontSize: '15px' }}>Generate</Typography>
+                    onClick={() => {
+                        props.handlePageChange('forward');
+                        submitPrompt(textInput)
+                            .then(() => console.log('Successfully created quiz!'))
+                            .catch(error => console.log('An error has occurred: ', error))
+                    }}
+                    sx={{
+                        float: 'right',
+                        "&.Mui-disabled": {backgroundColor: 'lightGrey', color: 'white'},
+                        backgroundColor: '#253859',
+                        color: 'aqua',
+                        padding: '10px',
+                        margin: '10px',
+                        '&:hover': {backgroundColor: 'black', color: 'aqua'},
+                    }}>
+                <Typography variant={"h6"} sx={{fontSize: '15px'}}>Generate</Typography>
             </Button>
         </div>
     )
