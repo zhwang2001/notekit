@@ -1,4 +1,4 @@
-import React, { JSX, useRef, useState } from 'react'
+import React, {JSX, useRef, useState} from 'react'
 import * as pdfjslib from 'pdfjs-dist'
 import { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist'
 import { TextContent } from "pdfjs-dist/types/web/text_layer_builder";
@@ -138,31 +138,31 @@ export default function UploadPdf(props: {
     }
 
     return (
-        <div style={{ width: '100%', display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
+        <div style={{width: '100%', display: 'flex', alignItems: 'center', flexDirection: 'column'}}>
             <div>
 
                 <input
                     type={"file"}
                     accept={".pdf"}
-                    style={{ display: 'none' }}
+                    style={{display: 'none'}}
                     ref={fileInputRef}
                     onChange={handleFileChange}
                 />
-                <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'row' }}>
+                <div style={{display: 'flex', alignItems: 'center', flexDirection: 'row'}}>
                     <FormHelperText sx={{
                         display: 'flex',
                         flexDirection: 'column',
                         width: '300px'
                     }}
-                        error={uploadError}>
+                                    error={uploadError}>
                         <Button
                             sx={{
-                                "&.Mui-disabled": { backgroundColor: 'lightGrey', color: 'white' },
+                                "&.Mui-disabled": {backgroundColor: 'lightGrey', color: 'white'},
                                 backgroundColor: '#253859',
                                 width: '300px',
                                 padding: '0px',
                                 marginTop: '20px',
-                                '&:hover': { backgroundColor: 'black', color: 'aqua' },
+                                '&:hover': {backgroundColor: 'black', color: 'aqua'},
                             }}
                             onClick={handleFileUpload}>
                             <Typography
@@ -176,7 +176,7 @@ export default function UploadPdf(props: {
                                     alignItems: 'center',
                                     padding: '5px 0px 5px 0px',
                                 }}>
-                                <FiUpload style={{ padding: '10px 10px 15px 10px' }} />
+                                <FiUpload style={{padding: '10px 10px 15px 10px'}}/>
                                 Upload PDF Here
                             </Typography>
                         </Button>
@@ -200,13 +200,13 @@ export default function UploadPdf(props: {
                                 <Typography variant="h5" color="text.primary" sx={{ fontSize: '15px', padding: '5px 0px 0px 5px' }}>
                                     Submit PDF
                                 </Typography>
-                                <RxTriangleRight size={35} style={{ color: '#253859' }} />
+                                <RxTriangleRight size={35} style={{color: '#253859'}}/>
                             </Button>
                         </Tooltip>
                         : null}
                 </div>
                 {showSlider
-                    ? <Box sx={{ width: '100%', color: 'black' }}>
+                    ? <Box sx={{width: '100%', color: 'black'}}>
                         <Slider
                             getAriaLabel={(): string => 'Page Range'}
                             size={"small"}
@@ -217,7 +217,7 @@ export default function UploadPdf(props: {
                             valueLabelDisplay="auto"
                             getAriaValueText={pageNumber}
                         />
-                        <Typography variant="h6" color="text.secondary" sx={{ fontSize: '15px' }}>
+                        <Typography variant="h6" color="text.secondary" sx={{fontSize: '15px'}}>
                             Choose a range of pages to submit
                         </Typography>
                     </Box>
@@ -287,7 +287,7 @@ const pdfToText = (doc: PDFDocumentProxy, pageRange: [firstPage, finalPage], sub
                     //map out the lines
                     pageInfo.items.map((lineInfo: TextItem | TextMarkedContent): Promise<void> => {
                         if ('str' in lineInfo){
-                            contentToSubmit += lineInfo.str
+                            contentToSubmit += lineInfo?.str
                         }
                         return Promise.resolve();
                     }))

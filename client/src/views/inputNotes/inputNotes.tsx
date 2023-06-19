@@ -1,10 +1,8 @@
-import React, { useState } from 'react'
-import { Button, Divider, TextField, Typography } from "@mui/material";
-import { inputValidation } from "./utils/validationUtils.ts";
-import { getQuiz } from "../../api";
+import React, {useState} from 'react'
+import {Button, Divider, TextField, Typography} from "@mui/material";
+import {inputValidation} from "./utils/validationUtils.ts";
+import {getQuiz} from "../../api";
 import UploadPdf from './UploadNotes.tsx'
-import { useDispatch } from 'react-redux';
-import { setAlert } from '../../reducers/alertsSlice.tsx';
 import {useSnackbar, VariantType} from "notistack";
 
 //TODO
@@ -31,7 +29,6 @@ export default function InputNotes(props: {
     setResponseSuccess: setStateResponseStatus
 }) {
 
-    const dispatch = useDispatch();
     //defaultValue for the textField component
     const initialString: Readonly<string> = "Example: Einstein was born on March 14, 1879, in Ulm, Germany, a town that today has " +
         "a population of just more than 120,000. There is a small commemorative plaque where his house " +
@@ -92,7 +89,7 @@ export default function InputNotes(props: {
     }
 
     return (
-        <div style={{width: '30vw', textAlign: 'center', minWidth:'320px'}}>
+        <div style={{width: '30vw', textAlign: 'center', minWidth: '320px'}}>
             <Typography variant="h4" color="text.primary" sx={{width: '100%', fontWeight: 550}}>
                 Notekit will generate a quiz from your uploaded PDF or notes
             </Typography>
@@ -101,7 +98,7 @@ export default function InputNotes(props: {
                 submitPrompt={submitPrompt}
             />
             <Divider orientation={"horizontal"}
-                sx={{ color: 'grey', width: '100%', fontSize: '20px', margin: '40px 0px 40px 0px' }}
+                     sx={{color: 'grey', width: '100%', fontSize: '20px', margin: '40px 0px 40px 0px'}}
             >or
             </Divider>
             <TextField
