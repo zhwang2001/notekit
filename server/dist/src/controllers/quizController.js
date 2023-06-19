@@ -34,7 +34,6 @@ const getQuiz = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         });
         //convert the string response into a nested array
         const response = content.data.choices[0].message.content;
-        console.log(response);
         const jsonResponse = JSON.parse(response);
         const questions = Object.keys(jsonResponse);
         const answers = Object.values(jsonResponse);

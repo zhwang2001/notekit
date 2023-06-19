@@ -1,12 +1,11 @@
 import './App.css';
-import { JSX, useEffect, useState } from 'react'
+import {JSX, useCallback, useEffect, useState} from 'react'
 import InputNotes from "./views/inputNotes/inputNotes";
 import FlashCards from "./views/flashCards/flashCards"
-import { Alert, AlertTitle, IconButton, LinearProgress, Snackbar, Tooltip, Typography } from "@mui/material";
+import { Alert, AlertTitle, LinearProgress, Snackbar, Typography } from "@mui/material";
 import backgroundImage from './assets/background_image.jpg'
-import { IoIosArrowBack } from "react-icons/io";
 import { useSelector } from 'react-redux';
-
+import {RootState} from "./reducers/alertsSlice.tsx";
 
 function App(): JSX.Element {
     //define state management for which page is being shown
@@ -31,7 +30,7 @@ function App(): JSX.Element {
      * @see setStartTimer sets the start timer state
      * @see setResponseSuccess sets the responseSuccess back to false
      */
-    const handlePageChange = (direction: string): void => {
+    const handlePageChange = useCallback((direction: string): void => {
         if (direction === "forward") {
             setPageIndex(pageIndex + 1)
             setStartTimer(true)
@@ -42,7 +41,7 @@ function App(): JSX.Element {
             setStartTimer(false)
             setResponseSuccess(false)
         }
-    }
+    },[pageIndex])
 
     //timeout after 60 seconds
     useEffect(() => {
@@ -54,7 +53,6 @@ function App(): JSX.Element {
             return () => {
                 clearTimeout(timeoutId)
                 setStartTimer(false)
-                console.log('Timer Reset')
             }
         }
     }, [handlePageChange, startTimer])
@@ -72,11 +70,6 @@ function App(): JSX.Element {
                 flexDirection: 'column',
                 textAlign: 'center',
             }}>
-                {/*<Tooltip title="Go Back" arrow>*/}
-                {/*    <IconButton onClick={() => handlePageChange('backward')} sx={{padding: '5px', margin: '10px'}}>*/}
-                {/*        <IoIosArrowBack/>*/}
-                {/*    </IconButton>*/}
-                {/*</Tooltip>*/}
                 <Typography variant="h3" color="text.primary" sx={{padding: '30px'}}>
                     Creating Quiz!
                 </Typography>
@@ -84,7 +77,7 @@ function App(): JSX.Element {
                     ? <Typography
                         variant="h5"
                         color="text.primary">
-                        ChatGPT didn't accept your prompt. Please try again
+                        Timed Out! ChatGPT couldn't process your prompt. Please try again
                     </Typography>
                     : <LinearProgress sx={{ width: '100%' }} />}
             </div>
@@ -102,11 +95,11 @@ function App(): JSX.Element {
                 setResponse={setResponse} />
             : <Loading />
     ]
+    //retrieve alert from global store
+    const alert: never[] = useSelector((state: RootState) => state.alerts.alert)
+    const [showSnackbar, setShowSnackbar] = useState<boolean>(true);
 
-    const alert = useSelector((state: unknown) => state.alerts.alert)
-    const [showSnackbar, setShowSnackbar] = useState(true);
-
-    useEffect(() => {
+    useEffect(() :void => {
         if (!alert.length) {
             setShowSnackbar(true);
         }
@@ -127,7 +120,7 @@ function App(): JSX.Element {
         }}>
             {alert.length > 0
                 ?
-                <Snackbar open={showSnackbar} onClose={() => { if (!alert.length) { setShowSnackbar(false) }; }} autoHideDuration={5000} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
+                <Snackbar open={showSnackbar} onClose={() => { if (!alert.length) { setShowSnackbar(false) } }} autoHideDuration={5000} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
                     <Alert severity={alert[1]} variant="filled">
                         <AlertTitle>{alert[0]}</AlertTitle>
                         {alert[2]}

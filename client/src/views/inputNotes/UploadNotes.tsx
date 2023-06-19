@@ -2,12 +2,17 @@ import React, { JSX, useRef, useState } from 'react'
 import * as pdfjslib from 'pdfjs-dist'
 import { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist'
 import { TextContent } from "pdfjs-dist/types/web/text_layer_builder";
-import { Button, FormHelperText, IconButton, Tooltip, Typography } from "@mui/material";
+import { Button, FormHelperText, Tooltip, Typography } from "@mui/material";
 import { FiUpload } from 'react-icons/fi'
 import Box from '@mui/material/Box'
 import Slider from '@mui/material/Slider'
 import { RxTriangleRight } from 'react-icons/rx'
-import { DocumentInitParameters, TypedArray } from "pdfjs-dist/types/src/display/api";
+import {
+    DocumentInitParameters,
+    TextItem,
+    TextMarkedContent,
+    TypedArray
+} from "pdfjs-dist/types/src/display/api";
 import { useDispatch } from 'react-redux';
 import { setAlert } from '../../reducers/alertsSlice';
 
@@ -100,7 +105,6 @@ export default function UploadPdf(props: {
                 setUploadError(false)
                 dispatch(setAlert(["Success", 'success', `Successfully uploaded ${file.name}`]))
                 setTimeout(() => dispatch(setAlert([])), 5000);
-                console.log('Uploaded file', file);
                 //initialize fileReader to convert PDF file to base64 string
                 const reader: FileReader = new FileReader();
                 reader.onload = (): void => {
@@ -190,7 +194,7 @@ export default function UploadPdf(props: {
                                 pdfToText(doc, pageRange, props.submitPrompt);
                                 props.handlePageChange('forward')
                             }} sx={{ padding: '10px', marginLeft: '10px', display: 'flex', alignItems: 'center' }}>
-                                <Typography variant="h6" color="text.secondary" sx={{ fontSize: '15px', padding: '5px 0px 0px 5px' }}>
+                                <Typography variant="h5" color="text.primary" sx={{ fontSize: '15px', padding: '5px 0px 0px 5px' }}>
                                     Submit PDF
                                 </Typography>
                                 <RxTriangleRight size={35} style={{ color: '#253859' }} />
@@ -201,7 +205,7 @@ export default function UploadPdf(props: {
                 {showSlider
                     ? <Box sx={{ width: '100%', color: 'black' }}>
                         <Slider
-                            getAriaLabel={() => 'Page Range'}
+                            getAriaLabel={(): string => 'Page Range'}
                             size={"small"}
                             value={pageRange}
                             min={1}
@@ -232,41 +236,25 @@ type finalPage = number
  */
 const pdfToText = (doc: PDFDocumentProxy, pageRange: [firstPage, finalPage], submitPrompt: submitPromptFunction): void => {
 
-    interface contentObject {
-        items: pageInfoObject[]
-        styles: object
-    }
-
-    interface pageInfoObject {
-        dir: string,
-        fontName: string,
-        hasE0L: boolean,
-        height: number,
-        str: string,
-        transform: number[],
-        width: number,
-    }
-
     /**
      * @brief A function that returns the pages within the pdf
      *
      * @param {PDFDocumentProxy} doc parameter that contains the pdf processed by pdf.js
      * @param {[1, finalPage]} pageRange parameter that contains the number of pages in the pdf
      */
-    async function getPages(doc: PDFDocumentProxy, pageRange: [firstPage, finalPage]): Promise<contentObject[] | undefined> {
+    async function getPages(doc: PDFDocumentProxy, pageRange: [firstPage, finalPage]): Promise<TextContent[] | undefined> {
         try {
             const firstPage = pageRange[0];
             const totalPages = pageRange[1];
             //store the data collected from pdf
-            const allContent: contentObject[] = [];
+            const allContent: TextContent[] = [];
             //iterate through the pages of the pdf retrieving content of the page
             for (let pageNumber = firstPage; pageNumber <= totalPages; pageNumber++) {
                 const page: PDFPageProxy = await doc.getPage(pageNumber);
                 const content: TextContent = await page.getTextContent();
-                console.log('Page', pageNumber, 'Content:', content);
+                /*console.log('Page', pageNumber, 'Content:', content);*/
                 allContent.push(content);
             }
-            console.log(allContent)
             return allContent
         } catch (error) {
             console.log('an error occurred', error)
@@ -278,27 +266,28 @@ const pdfToText = (doc: PDFDocumentProxy, pageRange: [firstPage, finalPage], sub
      *
      * @param {PDFDocumentProxy} doc parameter that contains the pdf processed by pdf.js
      * @param {[1, finalPage]} pageRange parameter that contains the number of pages in the pdf
-     * @param {Function} submitPrompt parameter that contains the logic ne
+     * @param {Function} submitPrompt parameter that contains the logic to send info to gpt
      * @returns {Promise<void>} a promise containing the properties of each line
      */
     async function getLines(doc: PDFDocumentProxy, pageRange: [firstPage, finalPage], submitPrompt: submitPromptFunction): Promise<Promise<void>[]> {
-        const content: contentObject[] | undefined = await getPages(doc, pageRange)
+        const content: TextContent[] | undefined = await getPages(doc, pageRange)
 
         if (!content) {
             return [];
         }
         //map out the pages
-        return content.map(async (pageInfo: contentObject, index: number): Promise<void> => {
+        return content.map(async (pageInfo: TextContent, index: number): Promise<void> => {
             try {
                 let contentToSubmit = ''
                 contentToSubmit += `\n\n\n-----------------------------Page ${index + 1}--------------------------------\n\n\n`
                 await Promise.all(
                     //map out the lines
-                    pageInfo.items.map((lineInfo: pageInfoObject): Promise<void> => {
-                        contentToSubmit += lineInfo.str
+                    pageInfo.items.map((lineInfo: TextItem | TextMarkedContent): Promise<void> => {
+                        if ('str' in lineInfo){
+                            contentToSubmit += lineInfo.str
+                        }
                         return Promise.resolve();
                     }))
-                console.log(contentToSubmit)
                 //submit prompt to gpt
                 submitPrompt(contentToSubmit)
                     .then(() => console.log('Successfully created quiz!'))

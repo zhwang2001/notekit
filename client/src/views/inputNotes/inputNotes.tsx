@@ -86,7 +86,6 @@ export default function InputNotes(props: {
      */
     const submitPrompt = async (textInput: string): Promise<void> => {
         const response = await getQuiz({ prompt: textInput });
-        console.log(response);
         const questionsAndAnswers: object = response.data;
         const nestedArray: string[][] = Object.values(questionsAndAnswers);
         props.setResponse(nestedArray);
@@ -120,7 +119,8 @@ export default function InputNotes(props: {
                 }}
                 error={error}
             ></TextField>
-            <Button disabled={error}
+            <Button
+                disabled={error}
                 onClick={() => {
                     props.handlePageChange('forward');
                     submitPrompt(textInput)
@@ -128,8 +128,8 @@ export default function InputNotes(props: {
                         .catch(error => console.log('An error has occurred: ', error))
                 }}
                 sx={{
+                    "&.Mui-disabled": { backgroundColor: 'rgb(224, 224, 224)', color: 'rgb(182, 182, 182)' },
                     float: 'right',
-                    "&.Mui-disabled": { backgroundColor: 'lightGrey', color: 'white' },
                     backgroundColor: '#253859',
                     color: 'aqua',
                     padding: '10px',

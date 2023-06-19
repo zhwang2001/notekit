@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import store from "../store";
 
 const initialState = {
     alert: []
@@ -9,7 +10,7 @@ const alertsSlice = createSlice({
     initialState,
     reducers: {
         //action to set the alert, payload is array containing [title, message, severity]
-        setAlert: (state, action) => {
+        setAlert: (state, action): void => {
             state.alert = action.payload
         }
     },
@@ -22,11 +23,6 @@ const alertsSlice = createSlice({
     */
 })
 
+export type RootState = ReturnType<typeof store.getState>
 export const { setAlert } = alertsSlice.actions
 export default alertsSlice.reducer
-
-//global state for managing pushed alerts
-//store in an array
-//push new alerts to array
-
-//setAlert([title, message, severity ])

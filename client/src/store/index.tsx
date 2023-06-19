@@ -1,8 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
 import alertsReducer from '../reducers/alertsSlice.tsx'
 
-export default configureStore({
+const store = configureStore({
     reducer: {
         alerts: alertsReducer,
     }
 })
+export default store

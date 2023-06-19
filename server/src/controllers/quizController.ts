@@ -41,7 +41,6 @@ export const getQuiz = async (req: Request, res: Response) => {
         })
         //convert the string response into a nested array
         const response: string = content.data!.choices[0].message!.content;
-        console.log(response);
         const jsonResponse: Object = JSON.parse(response);
         const questions: Array<string> = Object.keys(jsonResponse);
         const answers: Array<string> = Object.values(jsonResponse);

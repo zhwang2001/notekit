@@ -48,7 +48,6 @@ export function FlashCard(props: FlashCardProps): JSX.Element {
         setEditing(false)
         const newResponse: string[][] = [...response];
         newResponse.splice(index, 1)
-        console.log(newResponse)
         setResponse(newResponse)
         dispatch(setAlert(["info", 'info', 'Flash card deleted']))
         setTimeout(() => dispatch(setAlert([])), 5000);

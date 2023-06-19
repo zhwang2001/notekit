@@ -6,6 +6,5 @@
  */
 export function inputValidation(num: number): boolean {
     const RegExp = /^(?=.*\d)([5-9]\d{2}|[1-9]\d{3}|10000)$/;
-    console.log(RegExp.test(String(num)));
     return RegExp.test(String(num));
 }
