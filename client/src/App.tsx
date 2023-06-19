@@ -83,7 +83,7 @@ function App(): JSX.Element {
                     ? <Typography
                         variant="h5"
                         color="text.primary">
-                        Timed Out! ChatGPT couldn't process your prompt. Please try again
+                        Timed Out! the socrates algorithm couldn't process your prompt. Please try again
                     </Typography>
                     : <LinearProgress sx={{ width: '100%' }} />}
             </div>
