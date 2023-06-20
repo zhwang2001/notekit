@@ -1,4 +1,4 @@
-import React, { JSX, useState } from "react";
+import React, { JSX, useState, useEffect } from "react";
 import { Button, Card, CardContent, Divider, TextField, Typography } from "@mui/material";
 import { clipboardWriter } from "../utils/functionalUtils.tsx";
 import { IoCopyOutline, IoPencilOutline, IoTrashOutline } from "react-icons/io5";
@@ -67,6 +67,7 @@ export function FlashCard(props: FlashCardProps): JSX.Element {
     }
 
 
+    //Event handlers for editing flashcards functionality
     /**
      * @brief event handler for allowing questions and answers of flashcard to be edited
      *
@@ -75,10 +76,13 @@ export function FlashCard(props: FlashCardProps): JSX.Element {
     const handleEditChange = (): void => {
         setEditing(!editing)
         const variant: VariantType = 'info'
-        enqueueSnackbar('Editing flashcard', { variant })
+        if (!editing){
+            enqueueSnackbar('Editing flashcard', { variant })
+        } else {
+            enqueueSnackbar('Editing cancelled', { variant })
+        }
     };
 
-    //Event handlers for editing flashcards functionality
     /**
      * @brief event handler for saving edited changes
      *
