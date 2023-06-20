@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import quizRoutes from "./src/routes/quizRoutes";
 
-dotenv.config({path: `.env.local`, override: true});
+dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 5000;

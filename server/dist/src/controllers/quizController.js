@@ -8,12 +8,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getQuiz = void 0;
 const openai_1 = require("openai");
-const API_KEY = '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';
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 const openai = new openai_1.OpenAIApi(new openai_1.Configuration({
-    apiKey: API_KEY
+    apiKey: process.env.OPENAI_API_KEY
 }));
 /**
  * @brief Controller function to get a list of questions and answers based on a prompt
@@ -47,7 +51,7 @@ const getQuiz = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.json(questionObject).status(200);
     }
     catch (error) {
-        console.log(error);
+        console.log(error === null || error === void 0 ? void 0 : error.message);
         res.status(500).json(error);
     }
 });

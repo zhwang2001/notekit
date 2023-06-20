@@ -1,6 +1,7 @@
 import { Configuration, OpenAIApi } from "openai";
 import { Request, Response } from "express";
-
+import dotenv from "dotenv";
+dotenv.config();
 /**
  * Interface for types that represent query for openAI API
  * @interface
@@ -17,9 +18,8 @@ interface questionAnswerList {
     [key: string]: Array<string>
 }
 
-const API_KEY = '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'
 const openai = new OpenAIApi(new Configuration({
-    apiKey: API_KEY
+    apiKey: process.env.OPENAI_API_KEY
 }))
 
 /**
@@ -52,8 +52,8 @@ export const getQuiz = async (req: Request, res: Response) => {
             questionObject[`Q${i}`] = [questions[i], answers[i]];
         }
         res.json(questionObject).status(200);
-    } catch (error) {
-        console.log(error);
+    } catch (error: any) {
+        console.log(error?.message);
         res.status(500).json(error);
     }
 }
