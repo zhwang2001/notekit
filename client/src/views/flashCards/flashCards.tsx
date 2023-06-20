@@ -61,7 +61,7 @@ export const FlashCards: React.FC<FlashCardsProps> = (props: FlashCardsProps): R
     }
 
     return (
-        <CardContent sx={{ height: '100vh', padding: '10%' }}>
+        <CardContent sx={{height: '100vh', padding: '10%'}}>
             <div style={{
                 width: '100%',
                 display: 'flex',
@@ -69,11 +69,11 @@ export const FlashCards: React.FC<FlashCardsProps> = (props: FlashCardsProps): R
                 alignItems: 'center',
                 justifyContent: 'space-between'
             }}>
-                <div style={{ float: 'left', display: 'flex', alignItems: 'center', }}>
+                <div style={{float: 'left', display: 'flex', alignItems: 'center',}}>
                     <IconButton onClick={(): void => {
                         handlePageChange("backward");
                     }}>
-                        <IoIosArrowBack size={35} />
+                        <IoIosArrowBack size={35}/>
                     </IconButton>
                     <Typography variant="h2" color="text.primary">
                         Quiz
@@ -81,15 +81,15 @@ export const FlashCards: React.FC<FlashCardsProps> = (props: FlashCardsProps): R
                 </div>
                 <div>
                     <Tooltip title={"Copy Entire Quiz"}
-                        arrow>
+                             arrow>
                         <IconButton onClick={CopyEntireQuiz}>
-                            <IoCopy />
+                            <IoCopy/>
                         </IconButton>
                     </Tooltip>
                     <Tooltip title={"Share this Quiz"}
-                        arrow>
+                             arrow>
                         <IconButton onClick={CopyShareableLink}>
-                            <IoLogoTwitter />
+                            <IoLogoTwitter/>
                         </IconButton>
                     </Tooltip>
                 </div>

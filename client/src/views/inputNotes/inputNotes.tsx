@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
-import { Button, Divider, TextField, Typography } from "@mui/material";
-import { inputValidation } from "./utils/validationUtils.ts";
-import { getQuiz } from "../../api";
+import React, {useState} from 'react'
+import {Button, Divider, TextField, Typography} from "@mui/material";
+import {inputValidation} from "./utils/validationUtils.ts";
+import {getQuiz} from "../../api";
 import UploadPdf from './UploadNotes.tsx'
 import {useSnackbar, VariantType} from "notistack";
 
@@ -89,7 +89,7 @@ export default function InputNotes(props: {
     }
 
     return (
-        <div style={{width: '30vw', textAlign: 'center', minWidth:'320px'}}>
+        <div style={{width: '30vw', textAlign: 'center', minWidth: '320px'}}>
             <Typography variant="h4" color="text.primary" sx={{width: '100%', fontWeight: 550}}>
                 Notekit will generate a quiz from your uploaded PDF or notes
             </Typography>
@@ -98,7 +98,7 @@ export default function InputNotes(props: {
                 submitPrompt={submitPrompt}
             />
             <Divider orientation={"horizontal"}
-                sx={{ color: 'grey', width: '100%', fontSize: '20px', margin: '40px 0px 40px 0px' }}
+                     sx={{color: 'grey', width: '100%', fontSize: '20px', margin: '40px 0px 40px 0px'}}
             >or
             </Divider>
             <TextField

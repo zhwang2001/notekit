@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import store from "../store";
 
 const initialState = {
     alert: []
@@ -23,6 +22,5 @@ const alertsSlice = createSlice({
     */
 })
 
-export type RootState = ReturnType<typeof store.getState>
 export const { setAlert } = alertsSlice.actions
 export default alertsSlice.reducer

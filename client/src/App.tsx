@@ -85,7 +85,7 @@ function App(): JSX.Element {
                         color="text.primary">
                         Timed Out! the socrates algorithm couldn't process your prompt. Please try again
                     </Typography>
-                    : <LinearProgress sx={{ width: '100%' }} />}
+                    : <LinearProgress sx={{width: '100%'}}/>}
             </div>
         )
     }
@@ -93,13 +93,13 @@ function App(): JSX.Element {
     //array that stores the different pages viewed by user
     const pages: Readonly<JSX.Element[]> = [
         <InputNotes handlePageChange={handlePageChange}
-            setResponse={setResponse}
-            setResponseSuccess={setResponseSuccess} />,
+                    setResponse={setResponse}
+                    setResponseSuccess={setResponseSuccess}/>,
         responseSuccess
             ? <FlashCards handlePageChange={handlePageChange}
-                response={response}
-                setResponse={setResponse} />
-            : <Loading />
+                          response={response}
+                          setResponse={setResponse}/>
+            : <Loading/>
     ]
 
     return (
@@ -116,7 +116,7 @@ function App(): JSX.Element {
             overflowY: 'scroll',
         }}>
             {pages[pageIndex]}
-        </div >
+        </div>
     );
 }
 
