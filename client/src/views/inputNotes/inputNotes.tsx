@@ -1,10 +1,8 @@
-import React from 'react'
+import React, {useState} from 'react'
 import {Button, Divider, TextField, Typography} from "@mui/material";
-import {useState} from "react";
 import {inputValidation} from "./utils/validation";
 import {getQuiz} from "../../api";
 import UploadPdf from './UploadNotes.tsx'
-import {AxiosResponse} from "axios";
 
 //TODO
 //ability edit and make own flashcards
@@ -34,7 +32,7 @@ export default function InputNotes(props: {
 }) {
 
     //defaultValue for the textField component
-    const initialString : Readonly<string> = "Example: Einstein was born on March 14, 1879, in Ulm, Germany, a town that today has " +
+    const initialString: Readonly<string> = "Example: Einstein was born on March 14, 1879, in Ulm, Germany, a town that today has " +
         "a population of just more than 120,000. There is a small commemorative plaque where his house " +
         "used to stand (it was destroyed during World War II). The family moved to Munich shortly " +
         "after his birth, according to the Nobel Prize website, \n\n" +
@@ -81,12 +79,12 @@ export default function InputNotes(props: {
      *
      * @see setResponse sets the response to be utilized by other components
      */
-    const submitPrompt = async (textInput: string):Promise<void> => {
-            const response = await getQuiz({prompt: textInput});
-            console.log(response);
-            const questionsAndAnswers: object = response.data;
-            const nestedArray: string[][] = Object.values(questionsAndAnswers);
-            props.setResponse(nestedArray);
+    const submitPrompt = async (textInput: string): Promise<void> => {
+        const response = await getQuiz({prompt: textInput});
+        console.log(response);
+        const questionsAndAnswers: object = response.data;
+        const nestedArray: string[][] = Object.values(questionsAndAnswers);
+        props.setResponse(nestedArray);
     }
 
     return (

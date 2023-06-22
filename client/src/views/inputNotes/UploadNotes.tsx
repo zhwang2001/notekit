@@ -1,17 +1,18 @@
-import React, {JSX, useState, useRef} from 'react'
+import React, {JSX, useRef, useState} from 'react'
 import * as pdfjslib from 'pdfjs-dist'
+import {PDFDocumentProxy, PDFPageProxy} from 'pdfjs-dist'
 import {TextContent} from "pdfjs-dist/types/web/text_layer_builder";
 import {Button, FormHelperText, IconButton, Tooltip, Typography} from "@mui/material";
 import {FiUpload} from 'react-icons/fi'
-import {PDFDocumentProxy, PDFPageProxy} from "pdfjs-dist";
 import Box from '@mui/material/Box'
 import Slider from '@mui/material/Slider'
 import {RxTriangleRight} from 'react-icons/rx'
-import {Simulate} from "react-dom/test-utils";
-import submit = Simulate.submit;
+
+type pageChangeFunction = (direction: string) => void
+type submitPromptFunction = (textInput: string) => Promise<void>
+
 
 /**
- *
  * @constructor
  *
  * @brief A functional UI component that allows the user to upload pdfs for processing
@@ -20,7 +21,7 @@ import submit = Simulate.submit;
  * @param {Function} submitPrompt parameter contains the logic to submit prompt to gpt
  * @returns {JSX.Element} an upload button that only allows pdfs to be uploaded
  */
-export default function UploadPdf(handlePageChange: Function, submitPrompt: Function): JSX.Element {
+export default function UploadPdf(handlePageChange: pageChangeFunction, submitPrompt: submitPromptFunction): JSX.Element {
 
     //define state management for managing helper text message
     const [helperMsg, setHelperMsg] = useState<string>('')
@@ -56,10 +57,10 @@ export default function UploadPdf(handlePageChange: Function, submitPrompt: Func
      * @brief This function initializes pdf.js and prepares the pdf document using base64 string
      *
      * @details How this function works
-         * - Initialize pdf.js global worker options
-         * - Process the pdf document using dataUrl (base64 string)
-         * - Provide the document, page range, and number of pages of pdf document globally
-         * - Allow the user to choose which pages to process using the slider
+     * - Initialize pdf.js global worker options
+     * - Process the pdf document using dataUrl (base64 string)
+     * - Provide the document, page range, and number of pages of pdf document globally
+     * - Allow the user to choose which pages to process using the slider
      * @param {string} dataUrl base64 string of pdf file
      * @see setDoc
      * @see setNumPages sdf
@@ -70,7 +71,7 @@ export default function UploadPdf(handlePageChange: Function, submitPrompt: Func
         //initialize pdf.js
         pdfjslib.GlobalWorkerOptions.workerSrc = '../../../node_modules/pdfjs-dist/build/pdf.worker.js'
         //await processed document data
-        const doc =  await pdfjslib.getDocument(dataUrl).promise
+        const doc = await pdfjslib.getDocument(dataUrl).promise
         setDoc(doc)
         setNumPages(doc.numPages)
         setPageRange([1, doc.numPages])
@@ -84,8 +85,8 @@ export default function UploadPdf(handlePageChange: Function, submitPrompt: Func
      */
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement | null>): void => {
         const file: File | undefined = e.target.files?.[0];
-        if (file){
-            if (file.type === "application/pdf"){
+        if (file) {
+            if (file.type === "application/pdf") {
                 setHelperMsg(`* Successfully Uploaded ${file.name}`)
                 console.log('Uploaded file', file);
                 //initialize fileReader to convert PDF file to base64 string
@@ -96,7 +97,7 @@ export default function UploadPdf(handlePageChange: Function, submitPrompt: Func
                     processDocument(dataUrl).catch(error => console.log('an error occurred: ', error))
                 }
                 reader.readAsDataURL(file);
-            } else{
+            } else {
                 setHelperMsg('* Invalid File Type. Only PDF files are allowed')
                 setShowSlider(false)
             }
@@ -113,69 +114,72 @@ export default function UploadPdf(handlePageChange: Function, submitPrompt: Func
         fileInputRef.current?.click()
     }
 
-    return(
+    return (
         <div style={{width: '100%', display: 'flex', alignItems: 'center', flexDirection: 'column'}}>
             <div>
 
-            <input
-                type={"file"}
-                accept={".pdf"}
-                style={{ display: 'none' }}
-                ref={fileInputRef}
-                onChange={handleFileChange}
-            />
-            <div style={{display: 'flex', alignItems: 'center', flexDirection: 'row'}}>
-            <FormHelperText sx={{display: 'flex', flexDirection: 'column'}}>
-                <Button
-                    sx={{
-                        "&.Mui-disabled": {backgroundColor: 'lightGrey', color: 'white'},
-                        backgroundColor: '#253859',
-                        width: '300px',
-                        padding: '10px',
-                        marginTop: '20px',
-                        '&:hover': {backgroundColor: 'black', color: 'aqua'},
-                    }}
-                    onClick={handleFileUpload}>
-                    <Typography
-                        variant={"h6"}
-                        color={"text.primary"}
-                        sx={{
-                            fontSize: '20px',
-                            color: 'aqua',
-                            display: 'flex',
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            padding: '0px 10px 0px 10px'
-                        }}>
-                        <FiUpload style={{paddingRight: '10px'}} />
-                        Upload PDF Here
-                    </Typography>
-                </Button>
-                {helperMsg}
-            </FormHelperText>
-                {showSlider && doc
-                    ? <Tooltip title={"Submit the PDF"} placement={'right'} arrow>
-                        {/*convert pdf to text*/}
-                        <IconButton onClick={() => {pdfToText(doc, pageRange, submitPrompt); handlePageChange('forward')}} sx={{padding: '2px', margin: '10px'}}>
-                            <RxTriangleRight size={35} style={{color: '#253859'}}/>
-                        </IconButton>
-                    </Tooltip>
-                    : null}
-            </div>
-            {showSlider
-                ?<Box sx={{ width: '100%' }}>
-                    <Slider
-                        getAriaLabel={() => 'Page Range'}
-                        size={"small"}
-                        value={pageRange}
-                        min={1}
-                        max={numPages}
-                        onChange={handleChange}
-                        valueLabelDisplay="auto"
-                        getAriaValueText={pageNumber}
-                    />
+                <input
+                    type={"file"}
+                    accept={".pdf"}
+                    style={{display: 'none'}}
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                />
+                <div style={{display: 'flex', alignItems: 'center', flexDirection: 'row'}}>
+                    <FormHelperText sx={{display: 'flex', flexDirection: 'column'}}>
+                        <Button
+                            sx={{
+                                "&.Mui-disabled": {backgroundColor: 'lightGrey', color: 'white'},
+                                backgroundColor: '#253859',
+                                width: '300px',
+                                padding: '10px',
+                                marginTop: '20px',
+                                '&:hover': {backgroundColor: 'black', color: 'aqua'},
+                            }}
+                            onClick={handleFileUpload}>
+                            <Typography
+                                variant={"h6"}
+                                color={"text.primary"}
+                                sx={{
+                                    fontSize: '20px',
+                                    color: 'aqua',
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    padding: '0px 10px 0px 10px'
+                                }}>
+                                <FiUpload style={{paddingRight: '10px'}}/>
+                                Upload PDF Here
+                            </Typography>
+                        </Button>
+                        {helperMsg}
+                    </FormHelperText>
+                    {showSlider && doc
+                        ? <Tooltip title={"Submit the PDF"} placement={'right'} arrow>
+                            {/*convert pdf to text*/}
+                            <IconButton onClick={() => {
+                                pdfToText(doc, pageRange, submitPrompt);
+                                handlePageChange('forward')
+                            }} sx={{padding: '2px', margin: '10px'}}>
+                                <RxTriangleRight size={35} style={{color: '#253859'}}/>
+                            </IconButton>
+                        </Tooltip>
+                        : null}
+                </div>
+                {showSlider
+                    ? <Box sx={{width: '100%'}}>
+                        <Slider
+                            getAriaLabel={() => 'Page Range'}
+                            size={"small"}
+                            value={pageRange}
+                            min={1}
+                            max={numPages}
+                            onChange={handleChange}
+                            valueLabelDisplay="auto"
+                            getAriaValueText={pageNumber}
+                        />
                     </Box>
-                : null}
+                    : null}
             </div>
         </div>
     )
@@ -197,6 +201,7 @@ const pdfToText = (doc: PDFDocumentProxy, pageRange: [firstPage, finalPage], sub
         items: pageInfoObject[]
         styles: object
     }
+
     interface pageInfoObject {
         dir: string,
         fontName: string,
@@ -206,6 +211,7 @@ const pdfToText = (doc: PDFDocumentProxy, pageRange: [firstPage, finalPage], sub
         transform: number[],
         width: number,
     }
+
     /**
      * @brief A function that returns the pages within the pdf
      *
@@ -240,7 +246,7 @@ const pdfToText = (doc: PDFDocumentProxy, pageRange: [firstPage, finalPage], sub
      * @param {Function} submitPrompt parameter that contains the logic ne
      * @returns {Promise<void>} a promise containing the properties of each line
      */
-    async function getLines(doc: PDFDocumentProxy, pageRange:  [firstPage, finalPage], submitPrompt: Function): Promise<Promise<void>[]> {
+    async function getLines(doc: PDFDocumentProxy, pageRange: [firstPage, finalPage], submitPrompt: Function): Promise<Promise<void>[]> {
         const content: contentObject[] | undefined = await getPages(doc, pageRange)
 
         if (!content) {
@@ -249,7 +255,7 @@ const pdfToText = (doc: PDFDocumentProxy, pageRange: [firstPage, finalPage], sub
         //map out the pages
         return content.map(async (pageInfo: contentObject, index: number): Promise<void> => {
             try {
-                let contentToSubmit  = ''
+                let contentToSubmit = ''
                 contentToSubmit += `\n\n\n-----------------------------Page ${index + 1}--------------------------------\n\n\n`
                 await Promise.all(
                     //map out the lines
@@ -259,6 +265,8 @@ const pdfToText = (doc: PDFDocumentProxy, pageRange: [firstPage, finalPage], sub
                     }))
                 console.log(contentToSubmit)
                 submitPrompt(contentToSubmit)
+                    .then(() => console.log('Successfully created quiz!'))
+                    .catch((error: unknown) => console.log('An error has occurred: ', error))
             } catch (error) {
                 console.log('An error occurred: ', error)
                 return Promise.reject(error);
